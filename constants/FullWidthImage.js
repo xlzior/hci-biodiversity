@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Image } from 'react-native';
+import { Image, Dimensions } from 'react-native';
 import { View } from 'native-base';
 export default class FullWidthImage extends Component {
     constructor() {
@@ -12,7 +12,7 @@ export default class FullWidthImage extends Component {
     }
 
     _onLayout(event) {
-        const containerWidth = event.nativeEvent.layout.width;
+        const containerWidth = Dimensions.get('window').width;
 
         if (this.props.ratio) {
             this.setState({
