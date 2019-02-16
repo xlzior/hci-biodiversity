@@ -26,7 +26,7 @@ class FFList extends React.Component {
   render() {    
     let flora = [];
     let fauna = [];
-    const data = this.props.screenProps["Flora&Fauna"];
+    const data = this.props.screenProps.data["Flora&Fauna"];
 
     //Render all the cca elements from the data fetched from firebase
     for(let entry in data){
@@ -92,7 +92,7 @@ class FFList extends React.Component {
     return (
       <NavigationBar {...this.props}>
         <Form>
-          <Item style={styles.listItem}>
+          <Item>
             <Input
               onChangeText={searchTerm => {
                 this.setState({searchTerm});

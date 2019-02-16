@@ -1,13 +1,13 @@
 
 import { StyleSheet, Dimensions } from 'react-native';
 
-var fullwidth = Dimensions.get('window').width; //full width
-var fullheight = Dimensions.get('window').height; //full height
+var fullWidth = Dimensions.get('window').width; //full width
+var fullHeight = Dimensions.get('window').height; //full height
 
 const styles = StyleSheet.create({
   image: { //For main page
-    height: fullwidth*(0.75),
-    width: fullwidth,
+    height: fullWidth*(0.75),
+    width: fullWidth,
     flex: 1,
   },
   container: { //For main page
@@ -21,13 +21,13 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     display: 'flex',
-    width: 0.7*fullwidth,
+    width: 0.7*fullWidth,
     justifyContent: 'center'
   },
   header: { //For navigation bar
     textAlign: 'center',
-    color: '#636C76',
-    fontWeight: '400',
+    color: '#222222',
+    fontWeight: '500',
   },
   title: { //Used generally.
     textAlign: 'center',
