@@ -1,7 +1,7 @@
 
 import NavigationBar from '../navigation/NavigationBar';
 import {Image, View} from 'react-native';
-import { Text, List, ListItem, Left, Right, Icon, Input, Form, Item } from 'native-base';
+import { Text, List, ListItem, Input, Form, Item } from 'native-base';
 import React from 'react';
 import styles from '../constants/Style';
 import FFEntry from '../constants/FFEntry';
@@ -13,14 +13,23 @@ class FFList extends React.Component {
     searchTerm: ""
   }
 
-  isSearched(name){
+  isSearched(details){
     let search = this.state.searchTerm.toLowerCase();
     //Search bar empty
-    if(search == "")
+    console.log("Searching: " +  search);
+    if(search == "" || search == null)
+      return true;
+    
+    //Checks the entry's name, location and scientific name
+    if(details["Name"].toLowerCase().includes(search))
+      return true;
+    if(details["Locations"].toLowerCase().includes(search))
+      return true;
+    if(details["SciName"].toLowerCase().includes(search))
       return true;
 
-    if(name.toLowerCase().includes(search))
-      return true;
+    console.log("isSearched: FALSE");
+    return false;
   }
 
   render() {    
@@ -33,54 +42,39 @@ class FFList extends React.Component {
       let details = data[entry];
       display = (
         <ListItem
-          style={{
-            height:100,
-            width: '100%', 
-            marginLeft: 0, 
-            paddingLeft: 0, 
-            paddingRight: 0, 
-            marginRight: 0,
-            flexDirection: 'row'}}
+          style={styles.listItems}
           key={details["Name"]}
           button onPress={() => this.props.navigation.navigate({
             routeName: 'FFEntry',
-            params: { 
-              name: details["Name"],
-              sciname: details["Sciname"],
-              locations: details["Locations"],
-              description: details["Description"],
-              photo: details["Photo"] 
-            }
+            params: {details}
           })}
         >
-          <View style={{height:100,width:100,marginRight:15}}>
+          <View style={styles.listItemImageHolder}>
             <Image
               style={{height: 100}}
               source={{uri: details["Photo"]}}
               resizeMode='cover'/>
           </View>
-          <View style={{
-            height:100,
-            justifyContent: 'left', 
-            alignItems: 'left',
-            flexDirection: 'column'
-          }}>
+          
+          <View style={styles.listItemTextHolder}>
+
             <View style={{flex:0.3}}>
-              <Text style={styles.minititle}>{details["Name"]}</Text>
+              <Text style={styles.miniTitle}>{details["Name"]}</Text>
             </View>
-            <View style={{flex:0.7,width:'80%'}}>
-              <Text ellipsizeMode='tail' numberOfLines={3} style={styles.minidesc}>
+
+            <View style={{flex:0.7}}>
+              <Text ellipsizeMode='tail' numberOfLines={3} style={styles.miniDesc}>
                 {details["Description"]}
               </Text>
             </View>
+
           </View>
-          
         </ListItem>
       );
 
       //Push the element under the right section, and display it only
       //when searched for (or when searchbar is empty)
-      if(this.isSearched(details["Name"])){
+      if(this.isSearched(details)){
         if (entry.startsWith("Flora-")){
           flora.push(display);
         } else if(entry.startsWith("Fauna-")){
@@ -95,9 +89,9 @@ class FFList extends React.Component {
           <Item>
             <Input
               onChangeText={searchTerm => {
+                console.log("DEBUG SEARCH: {" + searchTerm +"}");
                 this.setState({searchTerm});
               }}
-              value={this.state.searchTerm}
               placeholder="Search"
               returnKeyType="search"
               clearButtonMode="always"
@@ -106,11 +100,11 @@ class FFList extends React.Component {
         </Form>
         <List>
           <ListItem itemDivider>
-            <Text style={[styles.lefttitle2,{marginTop:0}]}>Fauna</Text>
+            <Text style={[styles.leftTitle2,{marginTop:0}]}>Fauna</Text>
           </ListItem>
           {fauna}
           <ListItem itemDivider>
-            <Text style={[styles.lefttitle2,{marginTop:0}]}>Flora</Text>
+            <Text style={[styles.leftTitle2,{marginTop:0}]}>Flora</Text>
           </ListItem>
           {flora}
         </List>

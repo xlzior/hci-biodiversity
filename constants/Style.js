@@ -50,14 +50,14 @@ const styles = StyleSheet.create({
     fontWeight: '300',
     marginTop: 10
   },
-  lefttitle: { //For General Use (left Aligned)
+  leftTitle: { //For General Use (left Aligned)
     textAlign: 'left',
     fontSize: 27,
     color: '#646D77',
     fontWeight: '500',
     marginTop: 10,
   },
-  lefttitle2: { //For General Use (left Aligned), smaller
+  leftTitle2: { //For General Use (left Aligned), smaller
     textAlign: 'left',
     fontSize: 23,
     color: '#646D77',
@@ -79,19 +79,10 @@ const styles = StyleSheet.create({
     fontWeight: '300',
     marginTop: 10
   },
-  minititle: { //For the F&F List
-    textAlign: 'left',
-    fontSize: 17,
-    color: '#636C76',
-    fontWeight: '600',
-    marginTop: 10
-  },
-  minidesc: { //For the F&F List
-    textAlign: 'left',
-    fontSize: 13,
-    color: '#636C76',
-    fontWeight: '400',
-    marginTop: 10
+  center: { //Meant for general use to center objects.
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   card: { //For Acknowledgements
     padding: 20,
@@ -100,17 +91,38 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     marginRight: 10
   },
-  center: { //Meant for general use to center objects.
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center'
+  miniTitle: { //For the F&F List
+    textAlign: 'left',
+    fontSize: 17,
+    color: '#636C76',
+    fontWeight: '600',
+    alignSelf: 'stretch',
+    marginTop: 10
   },
-  listItem: {
+  miniDesc: { //For the F&F List
+    textAlign: 'left',
+    fontSize: 13,
+    color: '#636C76',
+    fontWeight: '400',
+    alignSelf: 'stretch',
+    marginTop: 10
+  },
+  listItems: { //Meant for each list-item in F&F List
     width: '100%', 
     marginLeft: 0, 
     paddingLeft: 0, 
     paddingRight: 0, 
-    marginRight: 0
+    marginRight: 0,
+    height: 100
+  },
+  listItemImageHolder: { //For the square image in F&F List
+    height:100,
+    width:100,
+    marginRight:15
+  },
+  listItemTextHolder: { //Holds the header and description of each entry in the F&F List
+    height:100,
+    width: '65%',
   }
 });
 

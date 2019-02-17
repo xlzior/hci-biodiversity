@@ -24,17 +24,15 @@ export default class App extends React.Component {
     this.state = {
       dataLoaded: false,
       data: {},
-      last_update: ""
     }
     this.datastoreRef = firebaseApp.database().ref();
   }
 
   render() {
-    let {dataLoaded} = this.state;
-    if (!dataLoaded) 
+    if (!this.state.dataLoaded) 
       return (
         <View style={styles.center}>
-          <Text>Loading...</Text>
+          <Text style={styles.title}>Loading...</Text>
         </View>
       );
 
