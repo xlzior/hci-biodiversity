@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Container, Content, Header, Title, Body, Left, Right, Button, Icon, View } from 'native-base';
-import styles from '../constants/Style';
+import styles from './Style';
 
 export default class NavigationBar extends Component {
   render() {

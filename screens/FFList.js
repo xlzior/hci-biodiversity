@@ -1,12 +1,12 @@
 
-import NavigationBar from '../navigation/NavigationBar';
-import {Image, View} from 'react-native';
-import { Text, List, ListItem, Input, Form, Item } from 'native-base';
 import React from 'react';
-import styles from '../constants/Style';
-import FFEntry from '../constants/FFEntry';
+import { Image, View } from 'react-native';
+import { Text, List, ListItem, Input, Form, Item } from 'native-base';
 import { createStackNavigator } from 'react-navigation';
 
+import NavigationBar from '../constants/NavigationBar';
+import FFEntry from './FFEntry';
+import styles from '../constants/Style';
 
 class FFList extends React.Component {
   state = {

@@ -1,10 +1,11 @@
 
-import NavigationBar from '../navigation/NavigationBar';
-import { Text, H1, Card } from 'native-base';
-import {Image} from 'react-native';
 import React from 'react';
-import styles from '../constants/Style';
+import { Image } from 'react-native';
+import { Text, H1, Card } from 'native-base';
+
+import NavigationBar from '../constants/NavigationBar';
 import FullWidthImage from '../constants/FullWidthImage';
+import styles from '../constants/Style';
 
 export default class Acknowledgements extends React.Component {
   render() {

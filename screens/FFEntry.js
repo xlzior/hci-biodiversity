@@ -1,8 +1,9 @@
 
 import React, { Component } from 'react';
-import styles from './Style';
-import FullWidthImage from './FullWidthImage';
 import { View, Text, Content } from 'native-base';
+
+import FullWidthImage from '../constants/FullWidthImage';
+import styles from '../constants/Style';
 
 export default class FFEntry extends Component {
   static navigationOptions = ({ navigation }) => {
@@ -11,20 +12,14 @@ export default class FFEntry extends Component {
     };
   };
 
- getParam = this.props.navigation.getParam;
-
   render() {
-    let name = this.getParam("details")["Name"];
-    let sciName = this.getParam("details")["SciName"];
-    let description = this.getParam("details")["Description"];
-    description = this.formatParagraph(description);
-    let locations = this.getParam("details")["Locations"];
-    let photo = this.getParam("details")["Photo"];
+    let {Name, SciName, Description, Locations, Photo} = this.props.navigation.getParam("details")
+    Description = this.formatParagraph(Description)
     let image;
-    if(photo != 'none'){
+    if(Photo != 'none'){
       image = <FullWidthImage
         style={styles.contentImage}
-        source={{uri: photo}}
+        source={{uri: Photo}}
       />
     }
 
@@ -35,13 +30,13 @@ export default class FFEntry extends Component {
         </View>
         <View style={{padding:20}}>
           <View style={{marginBottom: 100}}>
-            <Text style={styles.leftTitle}>{name}</Text>
-            <Text style={styles.subtitle}>{sciName}</Text>
+            <Text style={styles.leftTitle}>{Name}</Text>
+            <Text style={styles.subtitle}>{SciName}</Text>
 
-            <Text style={styles.description}>{description}</Text>
+            <Text style={styles.description}>{Description}</Text>
 
             <Text style={styles.leftTitle2}>Location(s): </Text>
-            <Text style={styles.description}>{locations}</Text>
+            <Text style={styles.description}>{Locations}</Text>
           </View>
         </View>
       </Content>
