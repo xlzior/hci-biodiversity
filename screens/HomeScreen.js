@@ -12,8 +12,8 @@ export default class HomeScreen extends React.Component {
     return (
       <NavigationBar {...this.props}>
         <Image  
-        style={styles.image}
-        source={require('../assets/homeimage.png')}
+          style={styles.image}
+          source={require('../assets/homeimage.png')}
         />
         <View style={styles.container}>
           <Text style={styles.title}>
@@ -28,17 +28,16 @@ export default class HomeScreen extends React.Component {
           <Text style={styles.paragraph}>
             Explore the extensive flora and fauna of our garden campus with interactive maps and bite-sized writeups 
           </Text>
-          <View flex style={{height: 20}}/>
-          <View flex style={{justifyContent: 'center', alignItems: 'center'}}>
+          <View style={{justifyContent: 'center', alignItems: 'center'}}>
             <Button info
-            style={styles.button}
-            onPress={() => this.props.navigation.navigate("Map", {test: "Moooo"})}
+              style={styles.button}
+              onPress={() => this.props.navigation.navigate("Map", {test: "Moooo"})}
             >
               <Text>Let's Go!</Text>
             </Button>
           </View>
         </View>
       </NavigationBar>
-      );
-    }
+    );
   }
+}

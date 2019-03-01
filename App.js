@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { Text, View } from 'native-base';
 import { Font } from 'expo';
 import styles from './constants/Style';
 import { createDrawerNavigator, createAppContainer } from 'react-navigation';
@@ -19,7 +19,6 @@ const firebaseConfig = {
 const firebaseApp = firebase.initializeApp(firebaseConfig);
 
 export default class App extends React.Component {
-
   constructor(props) {
     super(props);
     this.state = {
@@ -51,7 +50,6 @@ export default class App extends React.Component {
       });
     }).then(() => {
       this.setState({data})
-      console.log('data: ', data);
     })
   }
   
@@ -60,6 +58,7 @@ export default class App extends React.Component {
       'Roboto': require('native-base/Fonts/Roboto.ttf'),
       'Roboto_medium': require('native-base/Fonts/Roboto_medium.ttf')
     })
+    
     let dataLoading = this.fetchFromFirebase(this.datastoreRef);
     return Promise.all([dataLoading, fontLoading])
   }

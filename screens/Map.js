@@ -10,29 +10,31 @@ import MapView, { Marker, Overlay, Callout } from 'react-native-maps'
 export default class Map extends React.Component {
   render() {
     let {data} = this.props.screenProps;
-    let markersRaw = {}
-    if (data.hasOwnProperty("Map")) {
-      if (data["Map"].hasOwnProperty["Trail1"]) {
-        markersRaw = this.props.screenProps.data["Map"]["Trail1"]
-      }
-    }
-    markersRaw = Object.values(markersRaw)
-    let markers = markersRaw.map(marker => {
-      let {Title, Latitude, Longitude} = marker
-      return (
-      <Marker
-        key={Title}
-        coordinate={{latitude: Latitude, longitude: Longitude}}
-      >
-        <Callout>
-          <Text>{Title}</Text>
-          <Image
-            style={{width: 50, height: 50}}
-            source={{uri: 'https://facebook.github.io/react-native/docs/assets/favicon.png'}}
-          />
-        </Callout>
-      </Marker>
-    )})
+    let routesRaw = "Map" in data ? Object.values(data["Map"]) : []
+    let markers = routesRaw.map(routeDetails => {
+      let {Name, Color, Route} = routeDetails
+      Route = Object.values(Route)
+      let markers = Route.map(marker => {
+        let {Title, Latitude, Longitude, ImageURL} = marker
+        return (
+          <Marker
+            key={Title}
+            coordinate={{latitude: Latitude, longitude: Longitude}}
+            pinColor={Color}
+          >
+            <Callout>
+              <Text>{Title}</Text>
+              <Image
+                style={{width: 50, height: 50}}
+                source={{uri: ImageURL}}
+              />
+            </Callout>
+          </Marker>
+        )
+      })
+      return markers
+    })
+
     return (
       <NavigationBar {...this.props}>
         <MapView
@@ -47,7 +49,7 @@ export default class Map extends React.Component {
         >
         <Overlay
           image={require('./../assets/map.png')}
-          bounds={[[1.328056, 103.801536], [1.324357, 103.807693]]}
+          bounds={[[1.32804, 103.80153], [1.32434354, 103.807746]]}
         />
         {markers}
         </MapView>

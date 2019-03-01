@@ -19,8 +19,8 @@ const styles = StyleSheet.create({
   button: { //For main page
     margin: 10,
     flex: 1,
-    flexDirection: 'row',
     display: 'flex',
+    flexDirection: 'row',
     width: 0.7*fullWidth,
     justifyContent: 'center'
   },
@@ -59,9 +59,7 @@ const styles = StyleSheet.create({
   },
   leftTitle2: { //For General Use (left Aligned), smaller
     textAlign: 'left',
-    fontSize: 23,
-    color: '#646D77',
-    fontWeight: '500',
+    fontSize: 19,
     marginTop: 10,
   },
   subtitle: { //For General Use (left Aligned)
@@ -94,8 +92,7 @@ const styles = StyleSheet.create({
   miniTitle: { //For the F&F List
     textAlign: 'left',
     fontSize: 17,
-    color: '#636C76',
-    fontWeight: '600',
+    fontWeight: '500',
     alignSelf: 'stretch',
     marginTop: 10
   },
