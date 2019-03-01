@@ -44,10 +44,10 @@ export default class Map extends React.Component {
         <MapView
           style={{flex: 1, height: height-50}}
           initialRegion={{
-            latitude: 1.326029, 
-            longitude: 103.804553,
-            latitudeDelta: 0.0001,
-            longitudeDelta: 0.006327
+            "latitude": 1.3252783969319353,
+            "latitudeDelta": 0.010407239607321594,
+            "longitude": 103.80472172,
+            "longitudeDelta": 0.006327,
           }}
           showsUserLocation={true}
           onRegionChangeComplete={e => console.log(e)}

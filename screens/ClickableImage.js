@@ -1,36 +1,41 @@
 import React from 'react';
-import { ImageBackground, TouchableOpacity, StyleSheet, View, Animated } from 'react-native';
-import { Text } from 'native-base';
+import { ImageBackground, TouchableOpacity, Animated } from 'react-native';
 
 export default class ClickableImage extends React.Component {
+  constructor() {
+    super()
+    this.state = {
+      height: 0,
+      width: 0
+    }
+  }
   render() {
-    let whiteTags = (
-      <View style={{width: '100%', height: '100%'}}>
-        <TouchableOpacity
-          style={[styles.button, {top: "70%", left: "20%", borderBottomLeftRadius: 0}]}
-          onPress={() => console.log('HELLLOOOO')}
-        >
-          <Text style={styles.text}>Bush</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.button, {top: "50%", left: "50%", borderBottomRightRadius: 0}]}
-          onPress={() => console.log('HELLLOOOO')}
-        >
-          <Text style={styles.text}>Tree</Text>
-        </TouchableOpacity>
-      </View>
-    )
-    let greyCircle = (
-      <View style={{width: '100%', height: '100%'}}>
-        <PulsingCircle />
-      </View>
-    )
+    let points = [
+      { size: 100, top: 0.5, left: 0.5, pulse: 5 },
+      { size: 50, top: 0.25, left: 0.5, pulse: 5 },
+      { size: 30, top: 0.5, left: 0.25, pulse: 5 },
+      { size: 50, top: 0.5, left: 0.75, pulse: 5 },
+    ]
+    let pulsingCircles = points.map((point, index) => {
+      return (
+        <PulsingCircle
+          {...point}
+          key={index}
+          height={this.state.height}
+          width={this.state.width}
+        />
+      )
+    })
     return (
       <ImageBackground
         source={require('./../assets/blockD.jpg')}
         style={{width: '100%', height: '100%'}}
+        onLayout={(e) => {
+          let {height, width} = e.nativeEvent.layout
+          this.setState({height, width})
+        }}
       >
-        {greyCircle}
+      {this.state.height > 0 ? pulsingCircles : null}
       </ImageBackground>
     )
   }
@@ -39,32 +44,41 @@ export default class ClickableImage extends React.Component {
 const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity)
 
 class PulsingCircle extends React.Component {
-  state = {
-    size: new Animated.Value(70),
-    top: new Animated.Value(80),
-    left: new Animated.Value(80)
+  constructor(props) {
+    super(props)
+    let { size, top, left, height, width } = this.props;
+    let scaledTop = top*height-size/2
+    let scaledLeft = left*width-size/2
+    this.state = {
+      scaledTop,
+      scaledLeft,
+      animSize: new Animated.Value(size),
+      animTop: new Animated.Value(scaledTop),
+      animLeft: new Animated.Value(scaledLeft)
+    }
   }
 
   componentDidMount() {
-    let { size, top, left } = this.state;
+    let { size, pulse } = this.props;
+    let { scaledTop, scaledLeft, animSize, animTop, animLeft } = this.state;
     Animated.loop(
       Animated.sequence([
         Animated.parallel([
-          Animated.timing(size, { toValue: 80, duration: 1000 }),
-          Animated.timing(top, { toValue: 75, duration: 1000 }),
-          Animated.timing(left, { toValue: 75, duration: 1000 }),
+          Animated.timing(animSize, { toValue: size+2*pulse, duration: 1000 }),
+          Animated.timing(animTop, { toValue: scaledTop-pulse, duration: 1000 }),
+          Animated.timing(animLeft, { toValue: scaledLeft-pulse, duration: 1000 }),
         ]),
         Animated.parallel([
-          Animated.timing(size, { toValue: 70, duration: 1000 }),
-          Animated.timing(top, { toValue: 80, duration: 1000 }),
-          Animated.timing(left, { toValue: 80, duration: 1000 })
+          Animated.timing(animSize, { toValue: size, duration: 1000 }),
+          Animated.timing(animTop, { toValue: scaledTop, duration: 1000 }),
+          Animated.timing(animLeft, { toValue: scaledLeft, duration: 1000 })
         ])
       ])
     ).start()
   }
 
   render() {
-    let { size, top, left } = this.state;
+    let { animSize, animTop, animLeft } = this.state;
     let { style } = this.props;
 
     return (
@@ -72,34 +86,16 @@ class PulsingCircle extends React.Component {
         style={{
           ...style,
           position: 'absolute',
-          top: top,
-          left: left,
           borderWidth: 3,
-          borderColor: 'lightgrey',
-          borderRadius: 40,
-          height: size,
-          width: size
+          borderColor: 'gold',
+          borderRadius: animSize,
+          height: animSize,
+          width: animSize,
+          top: animTop,
+          left: animLeft
         }}
       >
       </AnimatedTouchableOpacity>
     );
   }
 }
-
-const styles = StyleSheet.create({
-  'button': {
-    backgroundColor: 'white',
-    position: 'absolute', 
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: 40,
-    borderRadius: 20,
-  },
-  'text': {
-    marginLeft: 20,
-    marginRight: 20,
-    marginTop: 10,
-    marginBottom: 10
-  }
-})

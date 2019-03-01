@@ -25,7 +25,7 @@ export default class HomeScreen extends React.Component {
             Welcome to Hwa Chong's very own Biodiversity Trails app!
           </Text>
           <Text style={styles.paragraph}>
-            Explore the extensive flora and fauna of our garden campus with interactive maps and bite-sized writeups 
+            Explore the extensive flora and fauna of our garden campus with interactive maps and bite-sized writeups.
           </Text>
           <View style={{justifyContent: 'center', alignItems: 'center'}}>
             <Button info
