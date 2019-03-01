@@ -7,7 +7,7 @@ export default class NavigationBar extends Component {
     return (
       <Container>
         <Header>
-          <Body style={{flex: 1}}>
+          <Body style={{alignItems: 'center', flex: 1}}>
             <Title style={styles.header}>{this.props.navigation.state.routeName}</Title>
           </Body>
           <Left style={{position: 'absolute', left: 0, bottom: 0}}>

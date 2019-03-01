@@ -18,15 +18,11 @@ const styles = StyleSheet.create({
   },
   button: { //For main page
     margin: 10,
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'row',
     width: 0.7*fullWidth,
     justifyContent: 'center'
   },
   header: { //For navigation bar
     textAlign: 'center',
-    color: '#222222',
     fontWeight: '500',
   },
   title: { //Used generally.
@@ -35,20 +31,23 @@ const styles = StyleSheet.create({
     color: '#646D77',
     fontWeight: '200',
     marginTop: 15,
+    fontFamily: 'Lato'
   },
   subtext: { //For main page (Center aligned)
     textAlign: 'center',
-    fontSize: 12,
-    color: '#A5B0BF',
+    fontSize: 14,
+    color: '#798493',
     fontWeight: '200',
+    fontStyle: 'italic',
     marginTop: 5,
   },
   paragraph: { //For main page (Center aligned)
     textAlign: 'center',
-    fontSize: 20,
+    fontSize: 17,
     color: '#636C76',
     fontWeight: '300',
-    marginTop: 10
+    marginTop: 10,
+    fontFamily: 'Lato'
   },
   leftTitle: { //For General Use (left Aligned)
     textAlign: 'left',
@@ -56,11 +55,13 @@ const styles = StyleSheet.create({
     color: '#646D77',
     fontWeight: '500',
     marginTop: 10,
+    fontFamily: 'Lato'
   },
   leftTitle2: { //For General Use (left Aligned), smaller
     textAlign: 'left',
     fontSize: 19,
     marginTop: 10,
+    fontFamily: 'Lato'
   },
   subtitle: { //For General Use (left Aligned)
     textAlign: 'left',
@@ -69,13 +70,15 @@ const styles = StyleSheet.create({
     color: '#616B75',
     fontWeight: '400',
     marginTop: 5,
+    fontFamily: 'Lato'
   },
   description: { //For General Use (Left Aligned)
     textAlign: 'left',
     fontSize: 18,
     color: '#636C76',
     fontWeight: '300',
-    marginTop: 10
+    marginTop: 10,
+    fontFamily: 'Lato'
   },
   center: { //Meant for general use to center objects.
     flex: 1,
@@ -94,7 +97,8 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: '500',
     alignSelf: 'stretch',
-    marginTop: 10
+    marginTop: 10,
+    fontFamily: 'Lato'
   },
   miniDesc: { //For the F&F List
     textAlign: 'left',
@@ -102,7 +106,8 @@ const styles = StyleSheet.create({
     color: '#636C76',
     fontWeight: '400',
     alignSelf: 'stretch',
-    marginTop: 10
+    marginTop: 10,
+    fontFamily: 'Lato'
   },
   listItems: { //Meant for each list-item in F&F List
     width: '100%', 

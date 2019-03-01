@@ -4,7 +4,6 @@ import { Image } from 'react-native';
 import { View, Text, Button } from 'native-base';
 
 import NavigationBar from '../constants/NavigationBar';
-import FullWidthImage from '../constants/FullWidthImage';
 import styles from '../constants/Style';
 
 export default class HomeScreen extends React.Component {
