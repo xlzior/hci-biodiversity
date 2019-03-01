@@ -9,6 +9,7 @@ import HomeScreen from './screens/HomeScreen';
 import MapView from './screens/Map';
 import FFList from './screens/FFList';
 import Acknowledgements from './screens/Acknowledgements';
+import ClickableImage from './screens/ClickableImage';
 
 const firebaseConfig = {
   apiKey: "AIzaSyBqqlRStr494376E0fE4Fg17LATiUYxNCI",
@@ -74,7 +75,8 @@ const RootDrawer = createAppContainer(createDrawerNavigator({
   Home: HomeScreen,
   Map: MapView,
   'Flora and Fauna': FFList,
-  Acknowledgements: Acknowledgements
+  Acknowledgements: Acknowledgements,
+  'Clickable Image': ClickableImage
 },
 {
   initialRouteName: 'Home',
