@@ -1,5 +1,6 @@
 import React from 'react';
 import { ImageBackground, TouchableOpacity, Animated } from 'react-native';
+import NavigationActions from 'react-navigation'
 
 export default class ClickableImage extends React.Component {
   constructor() {
@@ -10,15 +11,10 @@ export default class ClickableImage extends React.Component {
     }
   }
   render() {
-    let points = [
-      { size: 100, top: 0.5, left: 0.5, pulse: 5 },
-      { size: 50, top: 0.25, left: 0.5, pulse: 5 },
-      { size: 30, top: 0.5, left: 0.25, pulse: 5 },
-      { size: 50, top: 0.5, left: 0.75, pulse: 5 },
-    ]
-    let pulsingCircles = points.map((point, index) => {
+    let pulsingCircles = this.props.points.map((point, index) => {
       return (
         <PulsingCircle
+          {...this.props}
           {...point}
           key={index}
           height={this.state.height}
@@ -28,7 +24,7 @@ export default class ClickableImage extends React.Component {
     })
     return (
       <ImageBackground
-        source={require('./../assets/blockD.jpg')}
+        source={this.props.image}
         style={{width: '100%', height: '100%'}}
         onLayout={(e) => {
           let {height, width} = e.nativeEvent.layout
@@ -79,7 +75,8 @@ class PulsingCircle extends React.Component {
 
   render() {
     let { animSize, animTop, animLeft } = this.state;
-    let { style } = this.props;
+    let { style, params } = this.props;
+    console.log('params: ', params);
 
     return (
       <AnimatedTouchableOpacity
@@ -94,6 +91,22 @@ class PulsingCircle extends React.Component {
           top: animTop,
           left: animLeft
         }}
+        onPress={() => this.props.navigation.navigate(
+          'Flora and Fauna',
+          {},
+          () => this.props.navigation.dispatch(NavigationActions.navigate({
+            routeName: 'FFEntry',
+            params: {
+              details: {
+                'Name': "Common Grackle",
+                "Photo": "https://i.ytimg.com/vi/tQN-6GSNa_g/hqdefault.jpg",
+                "Description": "Bird",
+                "SciName": "QUISDDFLSKDJF",
+                "Locations": "SDDLFKJSDf"
+              }
+            }
+          }))
+        )}
       >
       </AnimatedTouchableOpacity>
     );

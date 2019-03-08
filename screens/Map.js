@@ -26,7 +26,9 @@ export default class Map extends React.Component {
             pinColor={Color}
             ref={component => this.markers[Name].push(component)}
           >
-            <Callout>
+            <Callout
+              onPress={() => this.props.navigation.navigate('Overview')}
+            >
               <Text>{Title}</Text>
               <Image
                 style={{width: 50, height: 50}}
@@ -38,9 +40,10 @@ export default class Map extends React.Component {
       })
       return markers
     })
+    // showCallout can't do more than 1 callout at a time
+    // <Button onPress={() => this.markers['College Section'].map(marker => marker.showCallout())}><Text>Show</Text></Button>
     return (
       <NavigationBar {...this.props}>
-        <Button onPress={() => this.markers['College Section'].map(marker => marker.showCallout())}><Text>Show</Text></Button>
         <MapView
           style={{flex: 1, height: height-50}}
           initialRegion={{

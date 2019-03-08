@@ -16,7 +16,7 @@ class FFList extends React.Component {
   isSearched(details){
     let search = this.state.searchTerm.toLowerCase();
     //Search bar empty
-    console.log("Searching: " +  search);
+    // console.log("Searching: " +  search);
     if(search == "" || search == null)
       return true;
     
@@ -28,11 +28,11 @@ class FFList extends React.Component {
     if(details["SciName"].toLowerCase().includes(search))
       return true;
 
-    console.log("isSearched: FALSE");
+    // console.log("isSearched: FALSE");
     return false;
   }
 
-  render() {    
+  render() {
     let flora = [];
     let fauna = [];
     const data = this.props.screenProps.data["Flora&Fauna"];
@@ -89,7 +89,7 @@ class FFList extends React.Component {
           <Item>
             <Input
               onChangeText={searchTerm => {
-                console.log("DEBUG SEARCH: {" + searchTerm +"}");
+                // console.log("DEBUG SEARCH: {" + searchTerm +"}");
                 this.setState({searchTerm});
               }}
               placeholder="Search"
@@ -114,7 +114,7 @@ class FFList extends React.Component {
 }
 
 export default createStackNavigator({
-  'Flora & Fauna': {
+  'Flora and Fauna': {
     screen: FFList,
     navigationOptions: ({
       header: null

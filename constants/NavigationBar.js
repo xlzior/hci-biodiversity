@@ -15,9 +15,9 @@ export default class NavigationBar extends Component {
               <Icon type='MaterialIcons' name='menu' />
             </Button>
           </Left>
-          <Right  style={{flex:0}}/>
+          <Right style={{flex: 0}}/>
         </Header>
-        <Content>
+        <Content contentContainerStyle={{flex: 1, display: 'flex'}}>
           {this.props.children}
         </Content>
       </Container>
