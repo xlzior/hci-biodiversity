@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Image, Dimensions } from 'react-native';
 import { View } from 'native-base';
+
 export default class FullWidthImage extends Component {
   constructor() {
     super();
@@ -25,12 +26,13 @@ export default class FullWidthImage extends Component {
         height: containerWidth * this.props.ratio
       });
     } else {
-      Image.getSize(this.props.source, (width, height) => {
+      Image.getSize(this.props.source.uri, (width, height) => {
         this.setState({
           width: containerWidth,
           height: containerWidth * height / width
         });
       });
+      
     }
   }
   

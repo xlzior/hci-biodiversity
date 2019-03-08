@@ -16,7 +16,6 @@ class FFList extends React.Component {
   isSearched(details){
     let search = this.state.searchTerm.toLowerCase();
     //Search bar empty
-    // console.log("Searching: " +  search);
     if(search == "" || search == null)
       return true;
     
@@ -27,8 +26,6 @@ class FFList extends React.Component {
       return true;
     if(details["SciName"].toLowerCase().includes(search))
       return true;
-
-    // console.log("isSearched: FALSE");
     return false;
   }
 

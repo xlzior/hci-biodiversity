@@ -1,6 +1,7 @@
 
 import React, { Component } from 'react';
 import { View, Text, Content } from 'native-base';
+import { Image } from 'react-native';
 
 import FullWidthImage from '../constants/FullWidthImage';
 import styles from '../constants/Style';
@@ -13,12 +14,11 @@ export default class FFEntry extends Component {
   };
 
   render() {
-    let {Name, SciName, Description, Locations, Photo} = this.props.navigation.getParam("details")
-    Description = this.formatParagraph(Description)
+    let {Name, SciName, Description, Locations, Photo} = this.props.navigation.getParam("details");
+    Description = this.formatParagraph(Description);
     let image;
     if(Photo != 'none'){
       image = <FullWidthImage
-        style={styles.contentImage}
         source={{uri: Photo}}
       />
     }

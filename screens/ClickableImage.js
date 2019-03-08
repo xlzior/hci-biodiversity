@@ -1,6 +1,7 @@
 import React from 'react';
 import { ImageBackground, TouchableOpacity, Animated } from 'react-native';
 import NavigationActions from 'react-navigation'
+import getFFEntryDetails from '../constants/FFEntryFetcher';
 
 export default class ClickableImage extends React.Component {
   constructor() {
@@ -75,10 +76,15 @@ class PulsingCircle extends React.Component {
 
   render() {
     let { animSize, animTop, animLeft } = this.state;
-    let { style, params } = this.props;
-    console.log('params: ', params);
-
-    return (
+    let { style, params, data } = this.props;
+    //console.log('params: ', params);
+    // console.log("DEBUG-DATA==============");
+    // console.log(params.name);
+    // console.log("");
+    // console.log(data);
+    // console.log("DEBUG-END==============");
+    let details = getFFEntryDetails(params.name,data);
+    return ( 
       <AnimatedTouchableOpacity
         style={{
           ...style,
@@ -91,22 +97,12 @@ class PulsingCircle extends React.Component {
           top: animTop,
           left: animLeft
         }}
-        onPress={() => this.props.navigation.navigate(
-          'Flora and Fauna',
-          {},
-          () => this.props.navigation.dispatch(NavigationActions.navigate({
+        onPress={() => this.props.navigation.navigate({
             routeName: 'FFEntry',
-            params: {
-              details: {
-                'Name': "Common Grackle",
-                "Photo": "https://i.ytimg.com/vi/tQN-6GSNa_g/hqdefault.jpg",
-                "Description": "Bird",
-                "SciName": "QUISDDFLSKDJF",
-                "Locations": "SDDLFKJSDf"
-              }
-            }
-          }))
-        )}
+            params: {details},
+            goBack: 'Overview',
+            key: 'Overview'
+          })}
       >
       </AnimatedTouchableOpacity>
     );
