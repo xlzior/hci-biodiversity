@@ -1,26 +1,21 @@
 import React from 'react'
 
 import NavigationBar from '../constants/NavigationBar';
-import { createStackNavigator } from 'react-navigation';
 import ClickableImage from './ClickableImage'
-import FFEntry from './FFEntry';
 
-
-
-class Overview extends React.Component {
+export default class Overview extends React.Component {
 
   render() {
-    // let points = [
-    //   { size: 100, top: 0.5, left: 0.5, pulse: 5 },
-    //   { size: 50, top: 0.25, left: 0.5, pulse: 5 },
-    //   { size: 30, top: 0.5, left: 0.25, pulse: 5 },
-    //   { size: 50, top: 0.5, left: 0.75, pulse: 5 },
-    // ]
     let points = [
-      { size: 100, top: 0.5, left: 0.5, pulse: 5, params: { name: 'Fauna-1' } }
+      { size: 50, top: 0.75, left: 0.35, pulse: 5, params: { name: 'Flora-1' } },
+      { size: 30, top: 0.3, left: 0.8, pulse: 5, params: { name: 'Fauna-1' } }
     ]
-    //console.log(this.props)
-    //Note: ONLY flora and fauna data is passed onto ClickableImage.
+    // Note: ONLY flora and fauna data is passed onto ClickableImage.
+    console.log('hello', this.props.navigation.getParam('ImageURL', ''));
+    let uri = this.props.navigation.getParam('ImageURL')
+    let image
+    if (uri) image = {uri}
+    else image = require('./../assets/blockD.jpg')
     return (
       <NavigationBar {...this.props} >
         <ClickableImage
@@ -33,15 +28,3 @@ class Overview extends React.Component {
     )
   }
 }
-
-
-
-export default createStackNavigator({
-  Overview: {
-    screen: Overview,
-    navigationOptions: ({
-      header: null,
-    })
-  },
-  FFEntry: FFEntry,
-});

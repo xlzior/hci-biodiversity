@@ -1,9 +1,9 @@
 
 const getFFEntryDetails = (dbName, data) => {
-  console.log(dbName);
+  // console.log(dbName);
   for(let entry in data){
     let details = data[entry];
-    console.log(entry + " comp " + dbName);
+    // console.log(entry + " comp " + dbName);
     if(entry == dbName) return details;
   }
 }

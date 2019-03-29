@@ -1,13 +1,16 @@
 import React from 'react';
 import { Image } from 'react-native';
-import { Text, Button } from 'native-base';
+import { Text } from 'native-base';
 import Dimensions from 'Dimensions';
 const {height} = Dimensions.get('window');
+import { createStackNavigator } from 'react-navigation';
 
 import NavigationBar from '../constants/NavigationBar';
+import Overview from './Overview'
+import FFEntry from './FFEntry';
 import MapView, { Marker, Overlay, Callout } from 'react-native-maps'
 
-export default class Map extends React.Component {
+class MapComponent extends React.Component {
   markers = {}
 
   render() {
@@ -18,7 +21,7 @@ export default class Map extends React.Component {
       this.markers[Name] = []
       Route = Object.values(Route)
       let markers = Route.map(marker => {
-        let {Title, Latitude, Longitude, ImageURL} = marker
+        let {Title, Latitude, Longitude, ImageURL} = marker;
         return (
           <Marker
             key={Title}
@@ -27,7 +30,10 @@ export default class Map extends React.Component {
             ref={component => this.markers[Name].push(component)}
           >
             <Callout
-              onPress={() => this.props.navigation.navigate('Overview')}
+              onPress={() => this.props.navigation.navigate({
+                routeName: 'Overview',
+                params: { ImageURL }
+              })}
             >
               <Text>{Title}</Text>
               <Image
@@ -53,7 +59,6 @@ export default class Map extends React.Component {
             "longitudeDelta": 0.006327,
           }}
           showsUserLocation={true}
-          onRegionChangeComplete={e => console.log(e)}
         >
         <Overlay
           image={require('./../assets/map.png')}
@@ -65,3 +70,19 @@ export default class Map extends React.Component {
     );
   }
 }
+
+export default createStackNavigator({
+  Map: {
+    screen: MapComponent,
+    navigationOptions: ({
+      header: null,
+    })
+  },
+  Overview: {
+    screen: Overview,
+    navigationOptions: ({
+      header: null,
+    })
+  },
+  FFEntry: FFEntry
+});

@@ -1,6 +1,5 @@
 import React from 'react';
 import { ImageBackground, TouchableOpacity, Animated } from 'react-native';
-import NavigationActions from 'react-navigation'
 import getFFEntryDetails from '../constants/FFEntryFetcher';
 
 export default class ClickableImage extends React.Component {
@@ -90,7 +89,7 @@ class PulsingCircle extends React.Component {
           ...style,
           position: 'absolute',
           borderWidth: 3,
-          borderColor: 'gold',
+          borderColor: (params.name.indexOf('Flora') >= 0) ? 'gold' : 'skyblue',
           borderRadius: animSize,
           height: animSize,
           width: animSize,
