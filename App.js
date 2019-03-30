@@ -38,7 +38,10 @@ export default class App extends React.Component {
     }
 
     return (
-      <RootDrawer screenProps={{data: this.state.data}}/>
+      <RootDrawer screenProps={{
+        data: this.state.data,
+        imagesRef: firebase.storage().ref().child("images")
+      }}/>
     );
   }
 
