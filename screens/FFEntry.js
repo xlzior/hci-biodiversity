@@ -13,10 +13,17 @@ export default class FFEntry extends Component {
   };
 
   state = {
-    imageURL: ""
+    imageURL: "",
+    isMounted: true
+  }
+
+  
+  componentWillUnmount(){
+    this.setState( { isMounted: false } )
   }
 
   componentDidMount() {
+    if(!this.state.isMounted) return;
     let {ImageRef} = this.props.navigation.getParam("details");
     this.props.screenProps.imagesRef.child(ImageRef).getDownloadURL()
     .then(imageURL => {

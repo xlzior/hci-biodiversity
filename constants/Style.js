@@ -136,7 +136,18 @@ const styles = StyleSheet.create({
   },
   grayIcon: {
     color: '#999999',
-  }
+  },
+  ffListCircleImageContainer: {
+    marginLeft: 8,
+    height: 200,
+    width: 200,
+    borderRadius: 200,
+  },
+  ffListCircleImage: {
+    height: 200,
+    width: 200,
+    borderRadius: 200,
+  },
 });
 
 export default styles;

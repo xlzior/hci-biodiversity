@@ -48,10 +48,14 @@ class FFList extends React.Component {
     let flora = [];
     let fauna = [];
     const data = this.props.screenProps.data["Flora&Fauna"];
-
     //Render all the flora and fauna elements from the data fetched from firebase
     for(let entry in data){
       let details = data[entry];
+
+      //Lol fix here
+      imageUrl = "https://firebasestorage.googleapis.com/v0/b/hci-biodiversity.appspot.com/o/images%2F" + 
+      details["ImageRef"].split(" ").join("%20").split("/").join("%2F") + "?alt=media&token=d586edcd-eb2d-4b81-bd01-cdf425a4c54c";
+
       display = (
         <ListItem
           style={styles.listItems}
@@ -64,7 +68,7 @@ class FFList extends React.Component {
           <View style={styles.listItemImageHolder}>
             <Image
               style={{height: 100}}
-              source={{uri: details["Photo"]}}
+              source={{uri: imageUrl}}
               resizeMode='cover'/>
           </View>
           
@@ -170,20 +174,25 @@ class FFList extends React.Component {
       //Return the two main buttons to go to other pages
       return (
         <View>
-          <Button style={styles.card}
-            onPress={() => {
-              this.setState({searchCriteria: "Flora"});
-            }}
-          >
-            <H1>Flora</H1>
-          </Button>
-          <Button style={styles.card}
-            onPress={() => {
-              this.setState({searchCriteria: "Fauna"});
-            }}
-          >
-            <H1>Fauna</H1>
-          </Button>
+          <View style={styles.ffListCircleImageContainer}>
+            <Image 
+              style={styles.ffListCircleImage} 
+              source={{uri: '../assets/flora.jpg'}}
+              resizeMode='cover'
+              onPress={() => {
+                this.setState({searchCriteria: "Flora"});
+              }}/>
+          </View>
+          
+          <View style={styles.ffListCircleImageContainer}>
+            <Image 
+              style={styles.ffListCircleImage} 
+              source={{uri: '../assets/fauna.jpg'}}
+              resizeMode='cover'
+              onPress={() => {
+                this.setState({searchCriteria: "Fauna"});
+              }}/>
+          </View>
         </View>
       );
     }
