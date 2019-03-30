@@ -1,7 +1,6 @@
 
 import React, { Component } from 'react';
 import { View, Text, Content } from 'native-base';
-import { Image } from 'react-native';
 
 import FullWidthImage from '../constants/FullWidthImage';
 import styles from '../constants/Style';
@@ -13,20 +12,32 @@ export default class FFEntry extends Component {
     };
   };
 
-  render() {
-    let {Name, SciName, Description, Locations, Photo} = this.props.navigation.getParam("details");
-    Description = this.formatParagraph(Description);
-    let image;
-    if(Photo != 'none'){
-      image = <FullWidthImage
-        source={{uri: Photo}}
-      />
-    }
+  state = {
+    imageURL: ""
+  }
 
+  componentDidMount() {
+    let {ImageRef} = this.props.navigation.getParam("details");
+    this.props.screenProps.imagesRef.child(ImageRef).getDownloadURL()
+    .then(imageURL => {
+      this.setState({ imageURL })
+      console.log('imageURL: ', imageURL);
+    })
+  }
+
+  render() {
+    let {Name, SciName, Description, Locations} = this.props.navigation.getParam("details");
+    Description = this.formatParagraph(Description);
+
+    console.log('RENDER this.state.imageURL: ', this.state.imageURL);
     return (
       <Content>
         <View>
-          {image}
+          {
+            this.state.imageURL ?
+            <FullWidthImage source={{uri: this.state.imageURL}}/> :
+            null
+          }
         </View>
         <View style={{padding:20}}>
           <View style={{marginBottom: 100}}>

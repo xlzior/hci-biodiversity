@@ -13,41 +13,65 @@ import MapView, { Marker, Overlay, Callout } from 'react-native-maps'
 class MapComponent extends React.Component {
   markers = {}
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      firebaseDownloadURLs: {}
+    }
+  }
+
+  componentDidMount() {
+    let {data} = this.props.screenProps;
+    let routesRaw = "Map" in data ? Object.values(data["Map"]) : []
+
+    routesRaw.map(({Route}) => {
+      Object.values(Route).forEach(({ImageRef}) => {
+        this.props.screenProps.imagesRef.child(ImageRef).getDownloadURL()
+        .then(url => {
+          let {firebaseDownloadURLs} = this.state;
+          firebaseDownloadURLs[ImageRef] = url
+          this.setState({ firebaseDownloadURLs })
+        })
+      })
+    })
+  }
+
   render() {
     let {data} = this.props.screenProps;
     let routesRaw = "Map" in data ? Object.values(data["Map"]) : []
-    let markers = routesRaw.map(routeDetails => {
-      let {Name, Color, Route} = routeDetails
-      this.markers[Name] = []
-      Route = Object.values(Route)
-      let markers = Route.map(marker => {
-        let {Title, Latitude, Longitude, ImageURL} = marker;
+
+    // create a list of markers
+    let markers = routesRaw.map(({Name, Color, Route}) => {
+
+      // return the markers for this route
+      return Object.values(Route).map(marker => {
+        let {Title, Latitude, Longitude, ImageRef, Points} = marker;
+        let url = this.state.firebaseDownloadURLs[ImageRef]
+        
         return (
           <Marker
             key={Title}
             coordinate={{latitude: Latitude, longitude: Longitude}}
             pinColor={Color}
-            ref={component => this.markers[Name].push(component)}
           >
             <Callout
               onPress={() => this.props.navigation.navigate({
                 routeName: 'Overview',
-                params: { ImageURL }
+                params: { url, points: Points },
+                goBack: "Map"
               })}
             >
               <Text>{Title}</Text>
               <Image
-                style={{width: 50, height: 50}}
-                source={{uri: ImageURL}}
+                style={{width: 100, height: 100}}
+                source={{ uri: url }}
               />
             </Callout>
           </Marker>
         )
       })
-      return markers
     })
-    // showCallout can't do more than 1 callout at a time
-    // <Button onPress={() => this.markers['College Section'].map(marker => marker.showCallout())}><Text>Show</Text></Button>
+
     return (
       <NavigationBar {...this.props}>
         <MapView
@@ -78,11 +102,9 @@ export default createStackNavigator({
       header: null,
     })
   },
-  Overview: {
-    screen: Overview,
-    navigationOptions: ({
-      header: null,
-    })
-  },
+  Overview: Overview,
   FFEntry: FFEntry
+},
+{
+  initialRouteName: 'Map',
 });
