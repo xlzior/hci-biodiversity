@@ -60,7 +60,8 @@ export default class App extends React.Component {
     let fontLoading = Font.loadAsync({
       'Roboto': require('native-base/Fonts/Roboto.ttf'),
       'Roboto_medium': require('native-base/Fonts/Roboto_medium.ttf'),
-      'Lato': require('./assets/Lato-Regular.ttf')
+      'Lato': require('./assets/Lato-Regular.ttf'),
+      'Precious': require('./assets/Precious.ttf')
     })
     
     let dataLoading = this.fetchFromFirebase(this.datastoreRef);

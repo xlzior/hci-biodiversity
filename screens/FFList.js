@@ -1,7 +1,7 @@
 
 import React from 'react';
-import { Image, View, TextInput } from 'react-native';
-import { Text, List, ListItem, Form, Item, Icon, H1, Button, Picker } from 'native-base';
+import { Image, ImageBackground, View, TextInput, TouchableOpacity } from 'react-native';
+import { Text, List, ListItem, Form, Item, Icon, Picker } from 'native-base';
 import { createStackNavigator } from 'react-navigation';
 
 
@@ -20,6 +20,10 @@ class FFList extends React.Component {
     this.searchBarElement = React.createRef();
   }
 
+  /**
+   * Checks if the details of an entry were searched for in searchTerm
+   * @param {*} details to be checked
+   */
   isSearched(details){
     let search = this.state.searchTerm.toLowerCase();
     //If search is unused, show everything
@@ -36,12 +40,16 @@ class FFList extends React.Component {
     return false;
   }
 
+  /**
+   * @returns whether or not the entry has been filtered by the search criteria
+   * @param {*} entry refers to the entry dictionary to be checked
+   */
   isFiltered(entry){
     if(this.state.searchCriteria == "All") 
-      return false;
+      return false; //No criteria set, so nothing's filtered
     if(entry.startsWith(this.state.searchCriteria)) 
-      return false;
-    return true;
+      return false; //Fulfills critera, so not filtered
+    return true; //Failed criteria and is filtered.
   }
 
   render() {
@@ -105,7 +113,7 @@ class FFList extends React.Component {
         <Form style={styles.textForm}>
           <Item>
             <Icon type='MaterialIcons' name='search' style={styles.grayIcon} />
-            <TextInput
+            <TextInput //Search bar
               onChangeText={searchTerm => {
                 // console.log("DEBUG SEARCH: {" + searchTerm +"}");
                 this.setState({searchTerm});
@@ -116,13 +124,13 @@ class FFList extends React.Component {
               clearButtonMode="never"
               style={styles.searchBar}
             />
-            <Icon type='MaterialIcons' name='cancel' style={styles.grayIcon}
+            <Icon type='MaterialIcons' name='cancel' style={styles.grayIcon} //Cancel icon button
               onPress={() => {
                 this.searchBarElement.current.clear();
                 this.setState({searchTerm:"",searchCriteria:"All"});
               }}
             />
-            <Picker
+            <Picker //Code for the criteria picker (All, Flora, Fauna)
                 mode="dropdown"
                 iosIcon={<Icon name="arrow-down" />}
                 style={{  }}
@@ -145,25 +153,43 @@ class FFList extends React.Component {
     )
   }
 
+  /**
+   * @returns the main body of the page, be it 2 round image buttons, or a list of entries.
+   * @param {*} fauna 
+   * @param {*} flora 
+   */
   getBody(fauna, flora){
     if(this.state.searchTerm != null && this.state.searchTerm != ""){
       //Return the search results if requested.
+      let faunaDivider = null;
+      let floraDivider = null;
+      
+      //Removes the header if search criteria is only flora or only fauna
+      if(this.state.searchCriteria == "All"){
+        faunaDivider = (
+          <ListItem itemDivider>
+            <Text style={[styles.leftTitle2,{marginTop:0}]}>Fauna</Text>
+          </ListItem>
+        );
+    
+        floraDivider = (
+          <ListItem itemDivider>
+            <Text style={[styles.leftTitle2,{marginTop:0}]}>Flora</Text>
+          </ListItem>
+         );
+      }
+      
       return (
         <List>
-            <ListItem itemDivider>
-              <Text style={[styles.leftTitle2,{marginTop:0}]}>Fauna</Text>
-            </ListItem>
+            {faunaDivider}
             {fauna}
-            <ListItem itemDivider>
-              <Text style={[styles.leftTitle2,{marginTop:0}]}>Flora</Text>
-            </ListItem>
+            {floraDivider}
             {flora}
           </List>
       );
 
-    }else if(this.state.searchCriteria == "Flora"||
-              this.state.searchCriteria == "Fauna"){
-      //Return filtered list
+    }else if(this.state.searchCriteria != "All"){
+      //Return filtered list (Either only flora or only fauna)
       return (
         <List>
           {fauna}
@@ -173,26 +199,32 @@ class FFList extends React.Component {
     }else{
       //Return the two main buttons to go to other pages
       return (
-        <View>
-          <View style={styles.ffListCircleImageContainer}>
-            <Image 
-              style={styles.ffListCircleImage} 
-              source={{uri: '../assets/flora.jpg'}}
-              resizeMode='cover'
-              onPress={() => {
-                this.setState({searchCriteria: "Flora"});
-              }}/>
-          </View>
+        <View style={styles.container}>
+            <TouchableOpacity onPress={
+              ()=>{this.setState({searchCriteria: "Flora"});}
+            }>
+              <ImageBackground
+                style={styles.ffListCircleImageBackground} 
+                imageStyle={styles.ffListCircleImage}
+                source={require('../assets/flora.jpg')}
+                resizeMode='cover'
+              >
+                <Text style={styles.ffListCircleText}>Flora</Text>
+              </ImageBackground>
+            </TouchableOpacity>
           
-          <View style={styles.ffListCircleImageContainer}>
-            <Image 
-              style={styles.ffListCircleImage} 
-              source={{uri: '../assets/fauna.jpg'}}
-              resizeMode='cover'
-              onPress={() => {
-                this.setState({searchCriteria: "Fauna"});
-              }}/>
-          </View>
+            <TouchableOpacity onPress={
+              ()=>{this.setState({searchCriteria: "Fauna"});}
+            }>
+              <ImageBackground
+                style={styles.ffListCircleImageBackground} 
+                imageStyle={styles.ffListCircleImage}
+                source={require('../assets/fauna.jpg')}
+                resizeMode='cover'
+              >
+                <Text style={styles.ffListCircleText}>Fauna</Text>
+              </ImageBackground>
+            </TouchableOpacity>
         </View>
       );
     }

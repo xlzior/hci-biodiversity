@@ -137,17 +137,29 @@ const styles = StyleSheet.create({
   grayIcon: {
     color: '#999999',
   },
-  ffListCircleImageContainer: {
-    marginLeft: 8,
+  ffListCircleImageBackground: { //For the circle image background
+    marginTop: 40,
     height: 200,
     width: 200,
-    borderRadius: 200,
+    borderRadius: 100,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  ffListCircleImage: {
+  ffListCircleImage: { //For the image inside the circle image background in FFList
     height: 200,
     width: 200,
-    borderRadius: 200,
+    borderRadius: 100
   },
+  ffListCircleText: { //For the text in the main circle images in FFList
+    fontSize: 45,
+    color: '#F6F8FA',
+    fontWeight: '400',
+    textShadowColor: 'rgba(0, 0, 0, 0.9)',
+    textShadowOffset: {width: -1, height: 1},
+    textShadowRadius: 20,
+    fontFamily: 'Precious',
+    padding: 35
+  }
 });
 
 export default styles;
