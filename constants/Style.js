@@ -125,6 +125,17 @@ const styles = StyleSheet.create({
   listItemTextHolder: { //Holds the header and description of each entry in the F&F List
     height:100,
     width: '65%',
+  },
+  searchBar:{
+    height: 50,
+    fontSize: 20,
+    flex: 1
+  },
+  textForm: {
+    paddingRight: 10,
+  },
+  grayIcon: {
+    color: '#999999',
   }
 });
 

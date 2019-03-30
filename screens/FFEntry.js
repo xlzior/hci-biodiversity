@@ -1,7 +1,6 @@
 
 import React, { Component } from 'react';
 import { View, Text, Content } from 'native-base';
-import { Image } from 'react-native';
 
 import FullWidthImage from '../constants/FullWidthImage';
 import styles from '../constants/Style';
