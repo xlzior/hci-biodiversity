@@ -1,5 +1,5 @@
 import React from 'react';
-import { ImageBackground, TouchableOpacity, Animated } from 'react-native';
+import { ImageBackground, Image, TouchableOpacity, Animated, View, Dimensions } from 'react-native';
 import getFFEntryDetails from '../constants/FFEntryFetcher';
 
 export default class ClickableImage extends React.Component {
@@ -8,10 +8,20 @@ export default class ClickableImage extends React.Component {
     this.state = {
       height: 0,
       width: 0,
-      isMounted: true
+      isMounted: true,
+      imageHeight: 0,
+      imageWidth: 0
     }
   }
+
+  componentDidMount() {
+    Image.getSize(this.props.image.uri, (imageHeight, imageWidth) => {
+      this.setState({imageHeight, imageWidth})
+    })
+  }
+
   render() {
+    let {imageHeight, imageWidth} = this.state
     let pulsingCircles = this.props.points.map((point, index) => {
       return (
         <PulsingCircle
@@ -23,10 +33,22 @@ export default class ClickableImage extends React.Component {
         />
       )
     })
+    let phoneHeight = Dimensions.get('window').height;
+    let phoneWidth = Dimensions.get('window').width;
+    let style = imageHeight > imageWidth ?
+    {
+      height: phoneWidth+20,
+      width: phoneHeight-50,
+      transform: [{ rotate: '90deg' }, { translateY: phoneWidth/3 }, { translateX: 100 }]
+    } :
+    {
+      height: '100%',
+      width: '100%'
+    }
     return (
       <ImageBackground
         source={this.props.image}
-        style={{width: '100%', height: '100%'}}
+        style={style}
         onLayout={(e) => {
           let {height, width} = e.nativeEvent.layout
           this.setState({height, width})
@@ -60,7 +82,7 @@ class PulsingCircle extends React.Component {
   }
 
   componentDidMount() {
-    if(!this.state.isMounted) return;
+    // if(!this.state.isMounted) return;
     let { size, pulse } = this.props;
     let { scaledTop, scaledLeft, animSize, animTop, animLeft } = this.state;
     Animated.loop(

@@ -20,7 +20,7 @@ export default class Overview extends Component {
     let points = this.props.navigation.getParam('points')
     let image
     if (uri) image = {uri}
-    else image = require('./../assets/blockD.jpg')
+    // else image = require('./../assets/blockD.jpg')
     return (
       <Content contentContainerStyle={{flex: 1, display: 'flex'}}>
         <ClickableImage
