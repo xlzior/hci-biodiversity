@@ -8,12 +8,10 @@ export default class ClickableImage extends React.Component {
     this.state = {
       height: 0,
       width: 0,
-      isMounted: true,
       imageHeight: 0,
       imageWidth: 0
     }
   }
-
   componentDidMount() {
     Image.getSize(this.props.image.uri, (imageHeight, imageWidth) => {
       this.setState({imageHeight, imageWidth})
@@ -75,14 +73,9 @@ class PulsingCircle extends React.Component {
       animTop: new Animated.Value(scaledTop),
       animLeft: new Animated.Value(scaledLeft)
     }
-  }  
-  
-  componentWillUnmount(){
-    this.setState( { isMounted: false } )
-  }
+  } 
 
   componentDidMount() {
-    // if(!this.state.isMounted) return;
     let { size, pulse } = this.props;
     let { scaledTop, scaledLeft, animSize, animTop, animLeft } = this.state;
     Animated.loop(

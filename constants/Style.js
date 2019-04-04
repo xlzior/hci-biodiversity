@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
   },
   searchBar:{
     height: 50,
-    fontSize: 20,
+    fontSize: 17,
     flex: 1
   },
   textForm: {

@@ -108,6 +108,22 @@ class FFList extends React.Component {
     }
 
     let body = this.getBody(fauna, flora);
+
+    let cancelButton = (
+      <Icon type='MaterialIcons' name='cancel' style={styles.grayIcon} //Cancel icon button
+        onPress={() => {
+          this.searchBarElement.current.clear();
+          this.setState({searchTerm:"",searchCriteria:"All"});
+        }}
+      />
+    );
+
+    //Hide the cancel button if there's no search term.
+    if((this.state.searchTerm == null||this.state.searchTerm == "")
+    &&(this.state.searchCriteria == "All")){
+      cancelButton = null;
+    }
+
     return (
       <NavigationBar {...this.props}>
         <Form style={styles.textForm}>
@@ -124,12 +140,7 @@ class FFList extends React.Component {
               clearButtonMode="never"
               style={styles.searchBar}
             />
-            <Icon type='MaterialIcons' name='cancel' style={styles.grayIcon} //Cancel icon button
-              onPress={() => {
-                this.searchBarElement.current.clear();
-                this.setState({searchTerm:"",searchCriteria:"All"});
-              }}
-            />
+            {cancelButton}
             <Picker //Code for the criteria picker (All, Flora, Fauna)
                 mode="dropdown"
                 iosIcon={<Icon name="arrow-down" />}
@@ -178,7 +189,17 @@ class FFList extends React.Component {
           </ListItem>
          );
       }
-      
+
+      //If the search results are empty, just display "No search results"
+      if(fauna.length == 0 && flora.length == 0){
+        return (
+          <View style={styles.center}>
+            <Text style={[styles.leftTitle,{marginTop:0}]}>No search results</Text>
+          </View>
+        );
+      }
+
+      //Returning search results
       return (
         <List>
             {faunaDivider}

@@ -8,18 +8,12 @@ export default class FullWidthImage extends Component {
     
     this.state = {
       width: 0,
-      height: 0,
-      isMounted: true
+      height: 0
     };
-  }
-  
-  componentWillUnmount(){
-    this.setState( { isMounted: false } )
   }
   
   _onLayout(event) {
     const containerWidth = Dimensions.get('window').width;
-    if(!this.state.isMounted) return;
     if (this.props.ratio) {
       this.setState({
         width: containerWidth,
