@@ -8,35 +8,26 @@ import styles from '../constants/Style';
 export default class FFEntry extends Component {
   static navigationOptions = ({ navigation }) => {
     return {
-      title: navigation.getParam("details")["Name"],
+      title: navigation.getParam("details")["name"],
     };
   };
 
   state = {
-    imageURL: "",
-    isMounted: true
-  }
-
-  
-  componentWillUnmount(){
-    this.setState( { isMounted: false } )
+    imageURL: ""
   }
 
   componentDidMount() {
-    if(!this.state.isMounted) return;
-    let {ImageRef} = this.props.navigation.getParam("details");
-    this.props.screenProps.imagesRef.child(ImageRef).getDownloadURL()
+    let {imageRef} = this.props.navigation.getParam("details");
+    this.props.screenProps.imagesRef.child(imageRef).getDownloadURL()
     .then(imageURL => {
       this.setState({ imageURL })
-      console.log('imageURL: ', imageURL);
     })
   }
 
   render() {
-    let {Name, SciName, Description, Locations} = this.props.navigation.getParam("details");
-    Description = this.formatParagraph(Description);
+    let {name, sciName, description, locations} = this.props.navigation.getParam("details");
+    description = this.formatParagraph(description);
 
-    console.log('RENDER this.state.imageURL: ', this.state.imageURL);
     return (
       <Content>
         <View>
@@ -48,13 +39,13 @@ export default class FFEntry extends Component {
         </View>
         <View style={{padding:20}}>
           <View style={{marginBottom: 100}}>
-            <Text style={styles.leftTitle}>{Name}</Text>
-            <Text style={styles.subtitle}>{SciName}</Text>
+            <Text style={styles.leftTitle}>{name}</Text>
+            <Text style={styles.subtitle}>{sciName}</Text>
 
-            <Text style={styles.description}>{Description}</Text>
+            <Text style={styles.description}>{description}</Text>
 
             <Text style={styles.leftTitle2}>Location(s): </Text>
-            <Text style={styles.description}>{Locations}</Text>
+            <Text style={styles.description}>{locations}</Text>
           </View>
         </View>
       </Content>

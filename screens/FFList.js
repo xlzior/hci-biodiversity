@@ -1,9 +1,7 @@
-
 import React from 'react';
 import { Image, ImageBackground, View, TextInput, TouchableOpacity } from 'react-native';
 import { Text, List, ListItem, Form, Item, Icon, Picker } from 'native-base';
 import { createStackNavigator } from 'react-navigation';
-
 
 import NavigationBar from '../constants/NavigationBar';
 import FFEntry from './FFEntry';
@@ -12,7 +10,8 @@ import styles from '../constants/Style';
 class FFList extends React.Component {
   state = {
     searchTerm: "",
-    searchCriteria: "All"
+    searchCriteria: "All",
+    firebaseDownloadURLs: {}
   }
 
   constructor(props){
@@ -25,17 +24,18 @@ class FFList extends React.Component {
    * @param {*} details to be checked
    */
   isSearched(details){
+    let {name, locations, sciName} = details
     let search = this.state.searchTerm.toLowerCase();
     //If search is unused, show everything
     if(search == null || search == "")
       return true;
     
     //Checks the entry's name, location and scientific name
-    if(details["Name"].toLowerCase().includes(search))
+    if(name.toLowerCase().includes(search))
       return true;
-    if(details["Locations"].toLowerCase().includes(search))
+    if(locations.toLowerCase().includes(search))
       return true;
-    if(details["SciName"].toLowerCase().includes(search))
+    if(sciName.toLowerCase().includes(search))
       return true;
     return false;
   }
@@ -52,22 +52,33 @@ class FFList extends React.Component {
     return true; //Failed criteria and is filtered.
   }
 
+  componentDidMount() {
+    let data = this.props.screenProps.data["flora&fauna"];
+    let ffRaw = Object.values(data)
+    ffRaw.forEach(({imageRef}) => {
+      this.props.screenProps.imagesRef.child(imageRef).getDownloadURL()
+      .then(url => {
+        let {firebaseDownloadURLs} = this.state;
+        firebaseDownloadURLs[imageRef] = url
+        this.setState({ firebaseDownloadURLs })
+      })
+    })
+  }
+
   render() {
     let flora = [];
     let fauna = [];
-    const data = this.props.screenProps.data["Flora&Fauna"];
+    const data = this.props.screenProps.data["flora&fauna"];
     //Render all the flora and fauna elements from the data fetched from firebase
     for(let entry in data){
       let details = data[entry];
-
-      //Lol fix here
-      imageUrl = "https://firebasestorage.googleapis.com/v0/b/hci-biodiversity.appspot.com/o/images%2F" + 
-      details["ImageRef"].split(" ").join("%20").split("/").join("%2F") + "?alt=media&token=d586edcd-eb2d-4b81-bd01-cdf425a4c54c";
+      let {name, description, imageRef} = details;
+      let imageUrl = this.state.firebaseDownloadURLs[imageRef]
 
       display = (
         <ListItem
           style={styles.listItems}
-          key={details["Name"]}
+          key={name}
           button onPress={() => this.props.navigation.navigate({
             routeName: 'FFEntry',
             params: {details}
@@ -83,12 +94,12 @@ class FFList extends React.Component {
           <View style={styles.listItemTextHolder}>
 
             <View style={{flex:0.3}}>
-              <Text style={styles.miniTitle}>{details["Name"]}</Text>
+              <Text style={styles.miniTitle}>{name}</Text>
             </View>
 
             <View style={{flex:0.7}}>
               <Text ellipsizeMode='tail' numberOfLines={3} style={styles.miniDesc}>
-                {details["Description"]}
+                {description}
               </Text>
             </View>
 
@@ -98,10 +109,10 @@ class FFList extends React.Component {
 
       //Push the element under the right section, and display it only
       //when searched for (or when searchbar is empty)
-      if(entry.startsWith("Flora-") && this.isSearched(details)){
+      if(entry.startsWith("flora-") && this.isSearched(details)){
         if(!this.isFiltered(entry))
           flora.push(display);
-      }else if(entry.startsWith("Fauna-") && this.isSearched(details,"Fauna")){
+      }else if(entry.startsWith("fauna-") && this.isSearched(details)){
         if(!this.isFiltered(entry))
           fauna.push(display);
       }
@@ -142,21 +153,21 @@ class FFList extends React.Component {
             />
             {cancelButton}
             <Picker //Code for the criteria picker (All, Flora, Fauna)
-                mode="dropdown"
-                iosIcon={<Icon name="arrow-down" />}
-                style={{  }}
-                placeholder="All"
-                placeholderIconColor="#007aff"
-                selectedValue={this.state.searchCriteria}
-                onValueChange={searchCriteria => {
-                  console.log(searchCriteria);
-                  this.setState({searchCriteria});
-                }}
-              >
-                <Picker.Item label="All" value="All" />
-                <Picker.Item label="Flora" value="Flora" />
-                <Picker.Item label="Fauna" value="Fauna" />
-              </Picker>
+              mode="dropdown"
+              iosIcon={<Icon name="arrow-down" />}
+              style={{  }}
+              placeholder="All"
+              placeholderIconColor="#007aff"
+              selectedValue={this.state.searchCriteria}
+              onValueChange={searchCriteria => {
+                console.log(searchCriteria);
+                this.setState({searchCriteria});
+              }}
+            >
+              <Picker.Item label="All" value="All" />
+              <Picker.Item label="Flora" value="flora" />
+              <Picker.Item label="Fauna" value="fauna" />
+            </Picker>
           </Item>
         </Form>
         {body}
@@ -187,7 +198,7 @@ class FFList extends React.Component {
           <ListItem itemDivider>
             <Text style={[styles.leftTitle2,{marginTop:0}]}>Flora</Text>
           </ListItem>
-         );
+        );
       }
 
       //If the search results are empty, just display "No search results"
@@ -222,7 +233,7 @@ class FFList extends React.Component {
       return (
         <View style={styles.container}>
             <TouchableOpacity onPress={
-              ()=>{this.setState({searchCriteria: "Flora"});}
+              ()=>{this.setState({searchCriteria: "flora"});}
             }>
               <ImageBackground
                 style={styles.ffListCircleImageBackground} 
@@ -235,7 +246,7 @@ class FFList extends React.Component {
             </TouchableOpacity>
           
             <TouchableOpacity onPress={
-              ()=>{this.setState({searchCriteria: "Fauna"});}
+              ()=>{this.setState({searchCriteria: "fauna"});}
             }>
               <ImageBackground
                 style={styles.ffListCircleImageBackground} 

@@ -12,10 +12,13 @@ export default class ClickableImage extends React.Component {
       imageWidth: 0
     }
   }
+
   componentDidMount() {
-    Image.getSize(this.props.image.uri, (imageHeight, imageWidth) => {
-      this.setState({imageHeight, imageWidth})
-    })
+    if (this.props.image && 'uri' in this.props.image) {
+      Image.getSize(this.props.image.uri, (imageHeight, imageWidth) => {
+        this.setState({imageHeight, imageWidth})
+      })
+    }
   }
 
   render() {
@@ -43,6 +46,8 @@ export default class ClickableImage extends React.Component {
       height: '100%',
       width: '100%'
     }
+    
+    if (!this.props.image) return null
     return (
       <ImageBackground
         source={this.props.image}
@@ -110,7 +115,7 @@ class PulsingCircle extends React.Component {
           ...style,
           position: 'absolute',
           borderWidth: 3,
-          borderColor: (params.name.indexOf('Flora') >= 0) ? 'gold' : 'skyblue',
+          borderColor: (params.name.indexOf('flora') >= 0) ? 'gold' : 'skyblue',
           borderRadius: animSize,
           height: animSize,
           width: animSize,

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Image } from 'react-native';
-import { Text } from 'native-base';
+import { Text, Picker, Icon } from 'native-base';
 import Dimensions from 'Dimensions';
 const {height} = Dimensions.get('window');
 import { createStackNavigator } from 'react-navigation';
@@ -8,7 +8,7 @@ import { createStackNavigator } from 'react-navigation';
 import NavigationBar from '../constants/NavigationBar';
 import Overview from './Overview'
 import FFEntry from './FFEntry';
-import MapView, { Marker, Overlay, Callout } from 'react-native-maps'
+import MapView, { Marker, Overlay, Callout, Polygon } from 'react-native-maps'
 
 class MapComponent extends React.Component {
   markers = {}
@@ -16,20 +16,22 @@ class MapComponent extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      firebaseDownloadURLs: {}
+      firebaseDownloadURLs: {},
+      showBird: null,
+      filterMode: "all"
     }
   }
 
   componentDidMount() {
     let {data} = this.props.screenProps;
-    let routesRaw = "Map" in data ? Object.values(data["Map"]) : []
+    let routes = "map" in data ? Object.values(data["map"]) : []
 
-    routesRaw.map(({Route}) => {
-      Object.values(Route).forEach(({ImageRef}) => {
-        this.props.screenProps.imagesRef.child(ImageRef).getDownloadURL()
+    routes.map(({route}) => {
+      route.forEach(({imageRef}) => {
+        this.props.screenProps.imagesRef.child(imageRef).getDownloadURL()
         .then(url => {
           let {firebaseDownloadURLs} = this.state;
-          firebaseDownloadURLs[ImageRef] = url
+          firebaseDownloadURLs[imageRef] = url
           this.setState({ firebaseDownloadURLs })
         })
       })
@@ -37,43 +39,111 @@ class MapComponent extends React.Component {
   }
 
   render() {
-    let {data} = this.props.screenProps;
-    let routesRaw = "Map" in data ? Object.values(data["Map"]) : []
+    let {data} = this.props.screenProps
+    let {map} = data;
+    let {filterMode} = this.state;
 
-    // create a list of markers
-    let markers = routesRaw.map(({Name, Color, Route}) => {
+    /* FILTER */
 
-      // return the markers for this route
-      return Object.values(Route).map(marker => {
-        let {Title, Latitude, Longitude, ImageRef, Points} = marker;
-        let url = this.state.firebaseDownloadURLs[ImageRef]
-        
+    let trailPickers = []
+    for (let trailId in map) {
+      let trailName = map[trailId]["name"]
+      trailPickers.push(<Picker.Item key={trailId} label={trailName} value={trailId}/>)
+    }
+
+    /* ROUTE */
+
+    for (let trailId in map) {
+      console.log('trailId: ', trailId);
+      console.log('filterMode: ', filterMode);
+      let {name, color, route} = map[trailId]
+      if (filterMode == "all" || filterMode == "flora" || filterMode == trailId) {
+        map[trailId]["markers"] = route.map(marker => {
+          let {title, latitude, longitude, imageRef, points} = marker;
+          let url = this.state.firebaseDownloadURLs[imageRef]
+          
+          return (
+            <Marker
+              key={title}
+              coordinate={{latitude, longitude}}
+              pinColor={color}
+            >
+              <Callout
+                onPress={() => this.props.navigation.navigate({
+                  routeName: 'Overview',
+                  params: { url, points: points },
+                  goBack: "Map"
+                })}
+              >
+                <Text>{title}</Text>
+                <Image
+                  style={{ width: 100, height: 100 }}
+                  source={{ uri: url }}
+                />
+              </Callout>
+            </Marker>
+          )
+        })
+      }
+    }
+
+    /* BIRDS */
+    let birds = {}, birdIds, birdRegions, birdMarkers, displayedBirdRegion
+    if (filterMode == "all" || filterMode == "fauna") {
+      for (let ff in data['flora&fauna']) {
+        if (ff.indexOf('fauna') >= 0) birds[ff] = data['flora&fauna'][ff]
+      }
+  
+      birdIds = Object.keys(birds)
+      birdRegions = {}
+      birdMarkers = Object.values(birds).map(({name, latitude, longitude, area}, index) => {
+        let birdId = birdIds[index]
+        birdRegions[birdId] = <Polygon coordinates={area} />
         return (
           <Marker
-            key={Title}
-            coordinate={{latitude: Latitude, longitude: Longitude}}
-            pinColor={Color}
-          >
-            <Callout
-              onPress={() => this.props.navigation.navigate({
-                routeName: 'Overview',
-                params: { url, points: Points },
-                goBack: "Map"
-              })}
-            >
-              <Text>{Title}</Text>
-              <Image
-                style={{width: 100, height: 100}}
-                source={{ uri: url }}
-              />
-            </Callout>
-          </Marker>
+            key={birdId}
+            image={require('./../assets/raven.png')}
+            coordinate={{latitude, longitude}}
+            onPress={() => this.setState({showBird: birdId})}
+          />
         )
       })
-    })
+  
+      displayedBirdRegion = this.state.showBird ? birdRegions[this.state.showBird] : null;
+    }
+
+    let display = []
+    if (filterMode == "all" || filterMode == "flora") {
+      let trails = []
+      for (let trail in map) {
+        trails.push(map[trail].markers)
+      }
+      display.push(trails)
+    }
+    if (filterMode == "all" || filterMode == "fauna") {
+      display.push(birdMarkers, displayedBirdRegion)
+    }
+    if (filterMode.indexOf('trail') >= 0) {
+      display.push(map[filterMode].markers)
+    }
 
     return (
       <NavigationBar {...this.props}>
+        <Picker
+          mode="dropdown"
+          iosIcon={<Icon name="arrow-down" />}
+          style={{width: "100%"}}
+          placeholder="All"
+          selectedValue={this.state.filterMode}
+          onValueChange={filterMode => {
+            this.setState({filterMode})
+          }}
+        >
+          <Picker.Item label="All" value="all"/>
+          <Picker.Item label="Flora" value="flora"/>
+          <Picker.Item label="Fauna" value="fauna"/>
+          {trailPickers}
+        </Picker>
         <MapView
           style={{flex: 1, height: height-50}}
           initialRegion={{
@@ -88,7 +158,7 @@ class MapComponent extends React.Component {
           image={require('./../assets/map.png')}
           bounds={[[1.32804, 103.80153], [1.32434354, 103.807746]]}
         />
-        {markers}
+        {display}
         </MapView>
       </NavigationBar>
     );
