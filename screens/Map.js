@@ -2,8 +2,9 @@ import React from 'react';
 import { Image } from 'react-native';
 import { Text, Picker, Icon } from 'native-base';
 import Dimensions from 'Dimensions';
-const {height} = Dimensions.get('window');
+const { height } = Dimensions.get('window');
 import { createStackNavigator } from 'react-navigation';
+import getFFEntryDetails from '../constants/FFEntryFetcher';
 
 import NavigationBar from '../constants/NavigationBar';
 import Overview from './Overview'
@@ -18,17 +19,24 @@ class MapComponent extends React.Component {
     this.state = {
       firebaseDownloadURLs: {},
       showBird: null,
-      filterMode: "all"
+      filterMode: "all",
+      mapURL: ""
     }
   }
 
   componentDidMount() {
-    let {data} = this.props.screenProps;
+    let {data, imagesRef} = this.props.screenProps;
+
+    imagesRef.child('maps/map_all.png').getDownloadURL()
+    .then(mapURL => {
+      this.setState({mapURL})
+    })
+
     let routes = "map" in data ? Object.values(data["map"]) : []
 
     routes.map(({route}) => {
-      route.forEach(({imageRef}) => {
-        this.props.screenProps.imagesRef.child(imageRef).getDownloadURL()
+      Object.values(route).forEach(({imageRef}) => {
+        imagesRef.child(imageRef).getDownloadURL()
         .then(url => {
           let {firebaseDownloadURLs} = this.state;
           firebaseDownloadURLs[imageRef] = url
@@ -39,7 +47,7 @@ class MapComponent extends React.Component {
   }
 
   render() {
-    let {data} = this.props.screenProps
+    let {data} = this.props.screenProps;
     let {map} = data;
     let {filterMode} = this.state;
 
@@ -54,11 +62,9 @@ class MapComponent extends React.Component {
     /* ROUTE */
 
     for (let trailId in map) {
-      console.log('trailId: ', trailId);
-      console.log('filterMode: ', filterMode);
       let {name, color, route} = map[trailId]
       if (filterMode == "all" || filterMode == "flora" || filterMode == trailId) {
-        map[trailId]["markers"] = route.map(marker => {
+        map[trailId]["markers"] = Object.values(route).map(marker => {
           let {title, latitude, longitude, imageRef, points} = marker;
           let url = this.state.firebaseDownloadURLs[imageRef]
           
@@ -98,7 +104,24 @@ class MapComponent extends React.Component {
       birdRegions = {}
       birdMarkers = Object.values(birds).map(({name, latitude, longitude, area}, index) => {
         let birdId = birdIds[index]
-        birdRegions[birdId] = <Polygon coordinates={area} />
+        let details = getFFEntryDetails(birdId, this.props.screenProps.data["flora&fauna"])
+        birdRegions[birdId] = (
+          <Polygon
+            key={birdId}
+            coordinates={area}
+            lineJoin="round"
+            fillColor="#0000FF20"
+            strokeColor="#00000000"
+            tappable
+            onPress={() => {
+              this.props.navigation.navigate({
+                routeName: "FFEntry",
+                params: {details},
+                goBack: "Map"
+              })
+            }}
+            />
+        )
         return (
           <Marker
             key={birdId}
@@ -112,7 +135,9 @@ class MapComponent extends React.Component {
       displayedBirdRegion = this.state.showBird ? birdRegions[this.state.showBird] : null;
     }
 
+    // build up the display based on filter modes
     let display = []
+    // deciding whether to include flora
     if (filterMode == "all" || filterMode == "flora") {
       let trails = []
       for (let trail in map) {
@@ -120,9 +145,11 @@ class MapComponent extends React.Component {
       }
       display.push(trails)
     }
+    // deciding whether to include fauna
     if (filterMode == "all" || filterMode == "fauna") {
       display.push(birdMarkers, displayedBirdRegion)
     }
+    // deciding which trails to include
     if (filterMode.indexOf('trail') >= 0) {
       display.push(map[filterMode].markers)
     }
@@ -155,7 +182,7 @@ class MapComponent extends React.Component {
           showsUserLocation={true}
         >
         <Overlay
-          image={require('./../assets/map.png')}
+          image={{uri: this.state.mapURL}}
           bounds={[[1.32804, 103.80153], [1.32434354, 103.807746]]}
         />
         {display}

@@ -6,14 +6,13 @@ import ClickableImage from './ClickableImage'
 export default class Overview extends Component {
   static navigationOptions = ({ navigation }) => {
     return {
-      title: "Overview", // TODO: change this to the location name
+      title: "Overview"
     };
   };
 
   render() {
     // Note: ONLY flora and fauna data is passed onto ClickableImage.
     let uri = this.props.navigation.getParam('url')
-    console.log('uri: ', uri);
     let points = this.props.navigation.getParam('points')
     let image = uri ? {uri} : null;
     // else image = require('./../assets/blockD.jpg')

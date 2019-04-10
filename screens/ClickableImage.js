@@ -8,8 +8,8 @@ export default class ClickableImage extends React.Component {
     this.state = {
       height: 0,
       width: 0,
-      imageHeight: 0,
-      imageWidth: 0
+      imageHeight: -1,
+      imageWidth: -1
     }
   }
 
@@ -22,21 +22,14 @@ export default class ClickableImage extends React.Component {
   }
 
   render() {
-    let {imageHeight, imageWidth} = this.state
-    let pulsingCircles = this.props.points.map((point, index) => {
-      return (
-        <PulsingCircle
-          {...this.props}
-          {...point}
-          key={index}
-          height={this.state.height}
-          width={this.state.width}
-        />
-      )
-    })
     let phoneHeight = Dimensions.get('window').height;
     let phoneWidth = Dimensions.get('window').width;
-    let style = imageHeight > imageWidth ?
+    let {imageHeight, imageWidth} = this.state;
+
+    if (imageHeight < 0) return null
+    let landscape = imageHeight > imageWidth;
+    // rotate the image if it's in landscape orientation
+    let style = landscape ?
     {
       height: phoneWidth+20,
       width: phoneHeight-50,
@@ -47,6 +40,19 @@ export default class ClickableImage extends React.Component {
       width: '100%'
     }
     
+    let pulsingCircles = this.props.points.map((point, index) => {
+      return (
+        <PulsingCircle
+          {...this.props}
+          {...point}
+          key={index}
+          height={this.state.height}
+          width={this.state.width}
+          landscape={landscape}
+        />
+      )
+    })
+
     if (!this.props.image) return null
     return (
       <ImageBackground
@@ -69,6 +75,7 @@ class PulsingCircle extends React.Component {
   constructor(props) {
     super(props)
     let { size, top, left, height, width } = this.props;
+    console.log('pulsing circle dimensions', height, width)
     let scaledTop = top*height-size/2
     let scaledLeft = left*width-size/2
     this.state = {
@@ -78,7 +85,7 @@ class PulsingCircle extends React.Component {
       animTop: new Animated.Value(scaledTop),
       animLeft: new Animated.Value(scaledLeft)
     }
-  } 
+  }
 
   componentDidMount() {
     let { size, pulse } = this.props;
@@ -101,33 +108,35 @@ class PulsingCircle extends React.Component {
 
   render() {
     let { animSize, animTop, animLeft } = this.state;
-    let { style, params, data } = this.props;
-    //console.log('params: ', params);
-    // console.log("DEBUG-DATA==============");
-    // console.log(params.name);
-    // console.log("");
-    // console.log(data);
-    // console.log("DEBUG-END==============");
+    let { params, data, landscape } = this.props;
     let details = getFFEntryDetails(params.name,data);
-    return ( 
+
+    let shiftedPositions = landscape ?
+    {
+      right: animTop,
+      top: animLeft
+    } :
+    {
+      top: animTop,
+      left: animLeft
+    }
+    return (
       <AnimatedTouchableOpacity
         style={{
-          ...style,
           position: 'absolute',
           borderWidth: 3,
           borderColor: (params.name.indexOf('flora') >= 0) ? 'gold' : 'skyblue',
           borderRadius: animSize,
           height: animSize,
           width: animSize,
-          top: animTop,
-          left: animLeft
+          ...shiftedPositions
         }}
         onPress={() => this.props.navigation.navigate({
-            routeName: 'FFEntry',
-            params: {details},
-            goBack: 'Overview',
-            key: 'Overview'
-          })}
+          routeName: 'FFEntry',
+          params: {details},
+          goBack: 'Overview',
+          key: 'Overview'
+        })}
       >
       </AnimatedTouchableOpacity>
     );

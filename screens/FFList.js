@@ -7,11 +7,29 @@ import NavigationBar from '../constants/NavigationBar';
 import FFEntry from './FFEntry';
 import styles from '../constants/Style';
 
+const options = {
+  enableHighAccuracy: true,
+  timeout: 5000,
+  maximumAge: 0
+};
+
+const distanceBetween = (lat1, lon1, lat2, lon2) => {
+  var p = 0.017453292519943295;    // Math.PI / 180
+  var c = Math.cos;
+  var a = 0.5 - c((lat2 - lat1) * p)/2 + 
+          c(lat1 * p) * c(lat2 * p) * 
+          (1 - c((lon2 - lon1) * p))/2;
+
+  return 12742 * Math.asin(Math.sqrt(a)); // 2 * R; R = 6371 km
+}
+
 class FFList extends React.Component {
   state = {
     searchTerm: "",
     searchCriteria: "All",
-    firebaseDownloadURLs: {}
+    firebaseDownloadURLs: {},
+    userCoordinates: {},
+    sortedByDistance: true
   }
 
   constructor(props){
@@ -52,127 +70,49 @@ class FFList extends React.Component {
     return true; //Failed criteria and is filtered.
   }
 
-  componentDidMount() {
-    let data = this.props.screenProps.data["flora&fauna"];
-    let ffRaw = Object.values(data)
-    ffRaw.forEach(({imageRef}) => {
-      this.props.screenProps.imagesRef.child(imageRef).getDownloadURL()
-      .then(url => {
-        let {firebaseDownloadURLs} = this.state;
-        firebaseDownloadURLs[imageRef] = url
-        this.setState({ firebaseDownloadURLs })
-      })
-    })
-  }
-
-  render() {
-    let flora = [];
-    let fauna = [];
-    const data = this.props.screenProps.data["flora&fauna"];
-    //Render all the flora and fauna elements from the data fetched from firebase
-    for(let entry in data){
-      let details = data[entry];
-      let {name, description, imageRef} = details;
+  /**
+   * @returns a React Native Display of ListItems
+   * @param {*} data refers to an array of objects of details of each flora / fauna item
+   */
+  generateDisplay(data) {
+    if (this.state.sortedByDistance) data.sort((a, b) => a.distance - b.distance)
+    return data.map((details) => {
+      let {id, name, description, imageRef} = details;
       let imageUrl = this.state.firebaseDownloadURLs[imageRef]
-
-      display = (
-        <ListItem
-          style={styles.listItems}
-          key={name}
-          button onPress={() => this.props.navigation.navigate({
-            routeName: 'FFEntry',
-            params: {details}
-          })}
-        >
-          <View style={styles.listItemImageHolder}>
-            <Image
-              style={{height: 100}}
-              source={{uri: imageUrl}}
-              resizeMode='cover'/>
-          </View>
-          
-          <View style={styles.listItemTextHolder}>
-
-            <View style={{flex:0.3}}>
-              <Text style={styles.miniTitle}>{name}</Text>
+      if (this.isSearched(details) && !this.isFiltered(id)) {
+        return (
+          <ListItem
+            style={styles.listItems}
+            key={name}
+            button onPress={() => this.props.navigation.navigate({
+              routeName: 'FFEntry',
+              params: {details}
+            })}
+          >
+            <View style={styles.listItemImageHolder}>
+              <Image
+                style={{height: 100}}
+                source={{uri: imageUrl}}
+                resizeMode='cover'/>
             </View>
-
-            <View style={{flex:0.7}}>
-              <Text ellipsizeMode='tail' numberOfLines={3} style={styles.miniDesc}>
-                {description}
-              </Text>
+            
+            <View style={styles.listItemTextHolder}>
+  
+              <View style={{flex:0.3}}>
+                <Text style={styles.miniTitle}>{name}</Text>
+              </View>
+  
+              <View style={{flex:0.7}}>
+                <Text ellipsizeMode='tail' numberOfLines={3} style={styles.miniDesc}>
+                  {description}
+                </Text>
+              </View>
+  
             </View>
-
-          </View>
-        </ListItem>
-      );
-
-      //Push the element under the right section, and display it only
-      //when searched for (or when searchbar is empty)
-      if(entry.startsWith("flora-") && this.isSearched(details)){
-        if(!this.isFiltered(entry))
-          flora.push(display);
-      }else if(entry.startsWith("fauna-") && this.isSearched(details)){
-        if(!this.isFiltered(entry))
-          fauna.push(display);
+          </ListItem>
+        );
       }
-    }
-
-    let body = this.getBody(fauna, flora);
-
-    let cancelButton = (
-      <Icon type='MaterialIcons' name='cancel' style={styles.grayIcon} //Cancel icon button
-        onPress={() => {
-          this.searchBarElement.current.clear();
-          this.setState({searchTerm:"",searchCriteria:"All"});
-        }}
-      />
-    );
-
-    //Hide the cancel button if there's no search term.
-    if((this.state.searchTerm == null||this.state.searchTerm == "")
-    &&(this.state.searchCriteria == "All")){
-      cancelButton = null;
-    }
-
-    return (
-      <NavigationBar {...this.props}>
-        <Form style={styles.textForm}>
-          <Item>
-            <Icon type='MaterialIcons' name='search' style={styles.grayIcon} />
-            <TextInput //Search bar
-              onChangeText={searchTerm => {
-                // console.log("DEBUG SEARCH: {" + searchTerm +"}");
-                this.setState({searchTerm});
-              }}
-              ref={this.searchBarElement}
-              placeholder="Search"
-              returnKeyType="search"
-              clearButtonMode="never"
-              style={styles.searchBar}
-            />
-            {cancelButton}
-            <Picker //Code for the criteria picker (All, Flora, Fauna)
-              mode="dropdown"
-              iosIcon={<Icon name="arrow-down" />}
-              style={{  }}
-              placeholder="All"
-              placeholderIconColor="#007aff"
-              selectedValue={this.state.searchCriteria}
-              onValueChange={searchCriteria => {
-                console.log(searchCriteria);
-                this.setState({searchCriteria});
-              }}
-            >
-              <Picker.Item label="All" value="All" />
-              <Picker.Item label="Flora" value="flora" />
-              <Picker.Item label="Fauna" value="fauna" />
-            </Picker>
-          </Item>
-        </Form>
-        {body}
-      </NavigationBar>
-    )
+    })
   }
 
   /**
@@ -180,7 +120,7 @@ class FFList extends React.Component {
    * @param {*} fauna 
    * @param {*} flora 
    */
-  getBody(fauna, flora){
+  generateBody(fauna, flora){
     if(this.state.searchTerm != null && this.state.searchTerm != ""){
       //Return the search results if requested.
       let faunaDivider = null;
@@ -213,11 +153,11 @@ class FFList extends React.Component {
       //Returning search results
       return (
         <List>
-            {faunaDivider}
-            {fauna}
-            {floraDivider}
-            {flora}
-          </List>
+          {faunaDivider}
+          {fauna}
+          {floraDivider}
+          {flora}
+        </List>
       );
 
     }else if(this.state.searchCriteria != "All"){
@@ -261,6 +201,114 @@ class FFList extends React.Component {
       );
     }
   }
+  
+  componentDidMount() {
+    let data = this.props.screenProps.data["flora&fauna"];
+    let ffRaw = Object.values(data)
+    ffRaw.forEach(({imageRef}) => {
+      this.props.screenProps.imagesRef.child(imageRef).getDownloadURL()
+      .then(url => {
+        let {firebaseDownloadURLs} = this.state;
+        firebaseDownloadURLs[imageRef] = url
+        this.setState({ firebaseDownloadURLs })
+      })
+    })
+
+    this.watchId = navigator.geolocation.watchPosition(
+      ({coords}) => {
+        this.setState({ userCoordinates: {uLat: coords.latitude, uLon: coords.longitude} })
+      },
+      () => console.error(`ERROR(${err.code}): ${err.message}`),
+      options
+    );
+  }
+
+  componentWillUnmount() {
+    navigator.geolocation.clearWatch(this.watchId)
+  }
+
+  render() {
+    let flora = [], fauna = [];
+    let {data} = this.props.screenProps;
+    const ffData = data["flora&fauna"];
+    const mapData = data["map"]
+
+    // Tidy up the data for each flora / fauna element in Firebase and calculate the distance
+    for (let entry in ffData){
+      let details = ffData[entry];
+      
+      // Calculate how far away this flora / fauna can be found
+      let distances = details.locations.split(',').map(id => {
+        let [trailId, routeId] = id.split('/')
+        let {latitude, longitude} = mapData[trailId]['route'][routeId]
+        let {uLat, uLon} = this.state.userCoordinates
+        return distanceBetween(latitude, longitude, uLat, uLon) * 1000
+      })
+      let distance = Math.min(...distances)
+
+      details = {id: entry, ...details, distance}
+      if (entry.startsWith("flora-")) flora.push(details)
+      else if (entry.startsWith("fauna-")) fauna.push(details)
+    }
+
+    let faunaDisplay = this.generateDisplay(fauna)
+    let floraDisplay = this.generateDisplay(flora)
+    let body = this.generateBody(faunaDisplay, floraDisplay);
+
+    // Cancel button
+    let cancelButton = (
+      <Icon type='MaterialIcons' name='cancel' style={styles.grayIcon} //Cancel icon button
+        onPress={() => {
+          this.searchBarElement.current.clear();
+          this.setState({searchTerm:"",searchCriteria:"All"});
+        }}
+      />
+    );
+
+    //Hide the cancel button if there's no search term.
+    if((this.state.searchTerm == null||this.state.searchTerm == "")
+    &&(this.state.searchCriteria == "All")){
+      cancelButton = null;
+    }
+
+    return (
+      <NavigationBar {...this.props}>
+        <Form style={styles.textForm}>
+          <Item>
+            <Icon type='MaterialIcons' name='search' style={styles.grayIcon} />
+            <TextInput //Search bar
+              onChangeText={searchTerm => {
+                this.setState({searchTerm});
+              }}
+              ref={this.searchBarElement}
+              placeholder="Search"
+              returnKeyType="search"
+              clearButtonMode="never"
+              style={styles.searchBar}
+            />
+            {cancelButton}
+            <Picker //Code for the criteria picker (All, Flora, Fauna)
+              mode="dropdown"
+              iosIcon={<Icon name="arrow-down" />}
+              style={{  }}
+              placeholder="All"
+              placeholderIconColor="#007aff"
+              selectedValue={this.state.searchCriteria}
+              onValueChange={searchCriteria => {
+                this.setState({searchCriteria});
+              }}
+            >
+              <Picker.Item label="All" value="All" />
+              <Picker.Item label="Flora" value="flora" />
+              <Picker.Item label="Fauna" value="fauna" />
+            </Picker>
+          </Item>
+        </Form>
+        {body}
+      </NavigationBar>
+    )
+  }
+
 }
 
 export default createStackNavigator({
