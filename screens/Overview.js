@@ -15,7 +15,6 @@ export default class Overview extends Component {
     let uri = this.props.navigation.getParam('url')
     let points = this.props.navigation.getParam('points')
     let image = uri ? {uri} : null;
-    // else image = require('./../assets/blockD.jpg')
     return (
       <Content contentContainerStyle={{flex: 1, display: 'flex'}}>
         <ClickableImage

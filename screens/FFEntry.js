@@ -1,6 +1,6 @@
 
 import React, { Component } from 'react';
-import { View, Text, Content } from 'native-base';
+import { View, Text, Content, Button } from 'native-base';
 
 import FullWidthImage from '../constants/FullWidthImage';
 import styles from '../constants/Style';
@@ -25,8 +25,28 @@ export default class FFEntry extends Component {
   }
 
   render() {
+    let data = this.props.screenProps.data['map']
     let {name, sciName, description, locations} = this.props.navigation.getParam("details");
     description = this.formatParagraph(description);
+
+    let locationButtons = locations.split(',').map(location => {
+      let [trailId, routeId] = location.split('/');
+      let {title} = data[trailId]['route'][routeId]
+      return (
+        <Button
+          key={location}
+          onPress={() => {
+            console.log("we're going on a trip to", title)
+            this.props.navigation.navigate({
+              routeName: "Map",
+              params: { location }
+            })
+          }}
+        >
+          <Text>{title}</Text>
+        </Button>
+      )
+    })
 
     return (
       <Content>
@@ -45,7 +65,7 @@ export default class FFEntry extends Component {
             <Text style={styles.description}>{description}</Text>
 
             <Text style={styles.leftTitle2}>Location(s): </Text>
-            <Text style={styles.description}>{locations}</Text>
+            {locationButtons}
           </View>
         </View>
       </Content>

@@ -59,16 +59,22 @@ class MapComponent extends React.Component {
       trailPickers.push(<Picker.Item key={trailId} label={trailName} value={trailId}/>)
     }
 
+    /* GO TO MAP */
+    let goToLocation = this.props.navigation.getParam('location', null)
+    // TODO: find out from GitHub history how to open a callout and do it
+    // TODO: find out how often all this is rendering
+
     /* ROUTE */
 
     for (let trailId in map) {
-      let {name, color, route} = map[trailId]
+      map[trailId]["markers"] = []
+      let {name, color, route, markers} = map[trailId]
       if (filterMode == "all" || filterMode == "flora" || filterMode == trailId) {
-        map[trailId]["markers"] = Object.values(route).map(marker => {
-          let {title, latitude, longitude, imageRef, points} = marker;
+        for (let routeId in route) {
+          let {title, latitude, longitude, imageRef, points} = route[routeId];
           let url = this.state.firebaseDownloadURLs[imageRef]
           
-          return (
+          markers.push(
             <Marker
               key={title}
               coordinate={{latitude, longitude}}
@@ -89,7 +95,7 @@ class MapComponent extends React.Component {
               </Callout>
             </Marker>
           )
-        })
+        }
       }
     }
 
@@ -110,8 +116,10 @@ class MapComponent extends React.Component {
             key={birdId}
             coordinates={area}
             lineJoin="round"
+            lineCap="round"
             fillColor="#0000FF20"
-            strokeColor="#00000000"
+            strokeColor="#0000FF20"
+            strokeWidth={3}
             tappable
             onPress={() => {
               this.props.navigation.navigate({
@@ -125,9 +133,11 @@ class MapComponent extends React.Component {
         return (
           <Marker
             key={birdId}
+            title={name}
             image={require('./../assets/raven.png')}
             coordinate={{latitude, longitude}}
             onPress={() => this.setState({showBird: birdId})}
+            ref={component => this.markers[birdId] = component}
           />
         )
       })
@@ -153,7 +163,6 @@ class MapComponent extends React.Component {
     if (filterMode.indexOf('trail') >= 0) {
       display.push(map[filterMode].markers)
     }
-
     return (
       <NavigationBar {...this.props}>
         <Picker
@@ -172,7 +181,7 @@ class MapComponent extends React.Component {
           {trailPickers}
         </Picker>
         <MapView
-          style={{flex: 1, height: height-50}}
+          style={{height: height-50}}
           initialRegion={{
             "latitude": 1.3252783969319353,
             "latitudeDelta": 0.010407239607321594,
@@ -181,10 +190,10 @@ class MapComponent extends React.Component {
           }}
           showsUserLocation={true}
         >
-        <Overlay
+        {this.state.mapURL ? <Overlay
           image={{uri: this.state.mapURL}}
-          bounds={[[1.32804, 103.80153], [1.32434354, 103.807746]]}
-        />
+          bounds={[[1.328214, 103.800920], [1.324215, 103.807922]]}
+        /> : null}
         {display}
         </MapView>
       </NavigationBar>
