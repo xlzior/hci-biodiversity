@@ -26,13 +26,12 @@ export default class FullWidthImage extends Component {
           height: containerWidth * height / width
         });
       });
-      
     }
   }
   
   render() {
     return (
-      <View onLayout={this._onLayout.bind(this)}>
+      <View style={{backgroundColor:'#ededed'}} onLayout={this._onLayout.bind(this)}>
       <Image
       source={this.props.source}
       style={{

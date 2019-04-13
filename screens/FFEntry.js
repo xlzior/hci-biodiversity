@@ -1,6 +1,6 @@
 
 import React, { Component } from 'react';
-import { View, Text, Content, Button } from 'native-base';
+import { View, Text, Content, Icon, ListItem, Right } from 'native-base';
 
 import FullWidthImage from '../constants/FullWidthImage';
 import styles from '../constants/Style';
@@ -33,18 +33,26 @@ export default class FFEntry extends Component {
       let [trailId, routeId] = location.split('/');
       let {title} = data[trailId]['route'][routeId]
       return (
-        <Button
-          key={location}
+        <ListItem 
+          key={location} 
+          style={styles.entryLocationListItem}
           onPress={() => {
-            console.log("we're going on a trip to", title)
             this.props.navigation.navigate({
               routeName: "Map",
               params: { location }
             })
           }}
         >
-          <Text>{title}</Text>
-        </Button>
+          <Text style={{flex:1}}>{title}</Text>
+          <Right>
+            <Icon 
+              type='MaterialIcons' 
+              name='arrow-forward'
+            />
+          </Right>
+          
+        </ListItem>
+        
       )
     })
 
@@ -63,8 +71,8 @@ export default class FFEntry extends Component {
             <Text style={styles.subtitle}>{sciName}</Text>
 
             <Text style={styles.description}>{description}</Text>
-
-            <Text style={styles.leftTitle2}>Location(s): </Text>
+            <Text>{'\n'}</Text>
+            <Text style={styles.leftTitle2}>Locations: </Text>
             {locationButtons}
           </View>
         </View>

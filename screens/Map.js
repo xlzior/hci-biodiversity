@@ -9,7 +9,7 @@ import getFFEntryDetails from '../constants/FFEntryFetcher';
 import NavigationBar from '../constants/NavigationBar';
 import Overview from './Overview'
 import FFEntry from './FFEntry';
-import MapView, { Marker, Overlay, Callout, Polygon } from 'react-native-maps'
+import MapView, { Marker, Overlay, Callout, Polygon } from 'react-native-maps';
 
 class MapComponent extends React.Component {
   markers = {}
@@ -29,7 +29,8 @@ class MapComponent extends React.Component {
 
     imagesRef.child('maps/map_all.png').getDownloadURL()
     .then(mapURL => {
-      this.setState({mapURL})
+      console.log(mapURL);
+      this.setState({mapURL});
     })
 
     let routes = "map" in data ? Object.values(data["map"]) : []
@@ -191,6 +192,7 @@ class MapComponent extends React.Component {
           showsUserLocation={true}
         >
         {this.state.mapURL ? <Overlay
+          //image={require('../assets/maptest.png')}
           image={{uri: this.state.mapURL}}
           bounds={[[1.328214, 103.800920], [1.324215, 103.807922]]}
         /> : null}

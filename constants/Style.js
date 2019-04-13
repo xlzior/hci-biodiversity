@@ -120,7 +120,8 @@ const styles = StyleSheet.create({
   listItemImageHolder: { //For the square image in F&F List
     height:100,
     width:100,
-    marginRight:15
+    marginRight:15,
+    backgroundColor: '#ededed'
   },
   listItemTextHolder: { //Holds the header and description of each entry in the F&F List
     height:100,
@@ -159,7 +160,15 @@ const styles = StyleSheet.create({
     textShadowRadius: 20,
     fontFamily: 'Precious',
     padding: 35
-  }
+  },
+  entryLocationListItem: { //Meant for each location in FF Entry location views
+    width: '100%', 
+    marginLeft: 0, 
+    marginRight: 0,
+    paddingLeft: 15,
+    height: 50,
+    flexDirection: 'row'
+  },
 });
 
 export default styles;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, ImageBackground, View, TextInput, TouchableOpacity } from 'react-native';
+import { Image, ImageBackground, View, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { Text, List, ListItem, Form, Item, Icon, Picker } from 'native-base';
 import { createStackNavigator } from 'react-navigation';
 
@@ -29,7 +29,8 @@ class FFList extends React.Component {
     searchCriteria: "All",
     firebaseDownloadURLs: {},
     userCoordinates: {},
-    sortedByDistance: true
+    sortedByDistance: true,
+    geoNoPerm: false
   }
 
   constructor(props){
@@ -76,9 +77,9 @@ class FFList extends React.Component {
    */
   generateDisplay(data) {
     if (this.state.sortedByDistance) data.sort((a, b) => a.distance - b.distance)
-    return data.map((details) => {
+    let tempList =  data.map((details) => {
       let {id, name, description, imageRef} = details;
-      let imageUrl = this.state.firebaseDownloadURLs[imageRef]
+      let imageUrl = this.state.firebaseDownloadURLs[imageRef];
       if (this.isSearched(details) && !this.isFiltered(id)) {
         return (
           <ListItem
@@ -111,8 +112,21 @@ class FFList extends React.Component {
             </View>
           </ListItem>
         );
+      }else{
+        //All entries need a return value
+        return null;
       }
-    })
+    });
+
+    let sortedList = [];
+    //Remove all null entries before returning
+    for (var i = 0; i < tempList.length; i++) {
+      let entry = tempList[i];
+      if(entry != null){
+        sortedList.push(entry);
+      }
+    }
+    return sortedList;
   }
 
   /**
@@ -140,7 +154,7 @@ class FFList extends React.Component {
           </ListItem>
         );
       }
-
+    
       //If the search results are empty, just display "No search results"
       if(fauna.length == 0 && flora.length == 0){
         return (
@@ -152,21 +166,25 @@ class FFList extends React.Component {
 
       //Returning search results
       return (
-        <List>
-          {faunaDivider}
-          {fauna}
-          {floraDivider}
-          {flora}
-        </List>
+        <ScrollView>
+          <List>
+            {faunaDivider}
+            {fauna}
+            {floraDivider}
+            {flora}
+          </List>
+        </ScrollView>
       );
 
     }else if(this.state.searchCriteria != "All"){
       //Return filtered list (Either only flora or only fauna)
       return (
-        <List>
-          {fauna}
-          {flora}
-        </List>
+        <ScrollView>
+          <List>
+            {fauna}
+            {flora}
+          </List>
+        </ScrollView>
       );
     }else{
       //Return the two main buttons to go to other pages
@@ -179,6 +197,7 @@ class FFList extends React.Component {
                 style={styles.ffListCircleImageBackground} 
                 imageStyle={styles.ffListCircleImage}
                 source={require('../assets/flora.jpg')}
+                cache="force-cache"
                 resizeMode='cover'
               >
                 <Text style={styles.ffListCircleText}>Flora</Text>
@@ -203,7 +222,7 @@ class FFList extends React.Component {
   }
   
   componentDidMount() {
-    let data = this.props.screenProps.data["flora&fauna"];
+    let data = this.props.screenProps.data["flora&fauna"] || {};
     let ffRaw = Object.values(data)
     ffRaw.forEach(({imageRef}) => {
       this.props.screenProps.imagesRef.child(imageRef).getDownloadURL()
@@ -218,7 +237,13 @@ class FFList extends React.Component {
       ({coords}) => {
         this.setState({ userCoordinates: {uLat: coords.latitude, uLon: coords.longitude} })
       },
-      () => console.error(`ERROR(${err.code}): ${err.message}`),
+      (err) => {
+        if(err.code == "E_NO_PERMISSIONS"){
+          Alert.alert("Geolocation Disabled","Location sorting will not work.");
+        }else{
+          console.error(`ERROR(${err.code}): ${err.message}`)
+        }
+      },
       options
     );
   }

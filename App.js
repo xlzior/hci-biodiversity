@@ -1,6 +1,7 @@
 import React from 'react';
+import {Image} from 'react-native';
 import { Text, View } from 'native-base';
-import { Font } from 'expo';
+import { Font, Asset } from 'expo';
 import styles from './constants/Style';
 import { createDrawerNavigator, createAppContainer } from 'react-navigation';
 
@@ -17,6 +18,18 @@ const firebaseConfig = {
   storageBucket: "hci-biodiversity.appspot.com"
 };
 const firebaseApp = firebase.initializeApp(firebaseConfig);
+
+function cacheImages(images) {
+  return images.map(image => {
+    if (typeof image === 'string') {
+      console.log("Attempting prefetch");
+      return Image.prefetch(image);
+    } else {
+      return Asset.fromModule(image).downloadAsync();
+    }
+  });
+}
+
 
 export default class App extends React.Component {
   constructor(props) {
@@ -62,11 +75,25 @@ export default class App extends React.Component {
       'Roboto_medium': require('native-base/Fonts/Roboto_medium.ttf'),
       'Lato': require('./assets/Lato-Regular.ttf'),
       'Precious': require('./assets/Precious.ttf')
-    })
+    });
+    
+    cacheImages([
+      require('./assets/fauna.jpg'),
+      require('./assets/flora.jpg'),
+      require('./assets/homeimage.png'),
+      //"https://firebasestorage.googleapis.com/v0/b/hci-biodiversity.appspot.com/o/images%2Fmaps%2Fmap_all.png?alt=media&token=669b3b25-4bc0-4346-b8d9-e4d0763d2e67",
+      //"https://firebasestorage.googleapis.com/v0/b/hci-biodiversity.appspot.com/o/images%2Fmaps%2Fmap_trail1.png?alt=media&token=669b3b25-4bc0-4346-b8d9-e4d0763d2e67",
+      //"https://firebasestorage.googleapis.com/v0/b/hci-biodiversity.appspot.com/o/images%2Fmaps%2Fmap_trail2.png?alt=media&token=669b3b25-4bc0-4346-b8d9-e4d0763d2e67",
+      //"https://firebasestorage.googleapis.com/v0/b/hci-biodiversity.appspot.com/o/images%2Fmaps%2Fmap_trail3.png?alt=media&token=669b3b25-4bc0-4346-b8d9-e4d0763d2e67",
+
+    ]);
     
     let dataLoading = this.fetchFromFirebase(this.datastoreRef);
+    
     return Promise.all([dataLoading, fontLoading])
   }
+
+  
 
   async componentDidMount() {
 	  this.loadData()
