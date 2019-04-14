@@ -29,8 +29,13 @@ class FFList extends React.Component {
     searchCriteria: "All",
     firebaseDownloadURLs: {},
     userCoordinates: {},
-    sortedByDistance: true,
-    geoNoPerm: false
+    geoNoPerm: false,
+    type: {
+      flora: true,
+      fauna: true
+    },
+    trail: "all",
+    sortBy: "alphabetical"
   }
 
   constructor(props){
@@ -46,16 +51,12 @@ class FFList extends React.Component {
     let {name, locations, sciName} = details
     let search = this.state.searchTerm.toLowerCase();
     //If search is unused, show everything
-    if(search == null || search == "")
-      return true;
+    if(search == null || search == "") return true;
     
     //Checks the entry's name, location and scientific name
-    if(name.toLowerCase().includes(search))
-      return true;
-    if(locations.toLowerCase().includes(search))
-      return true;
-    if(sciName.toLowerCase().includes(search))
-      return true;
+    if(name.toLowerCase().includes(search)) return true;
+    if(sciName.toLowerCase().includes(search)) return true;
+    if(locations.toLowerCase().includes(search)) return true;
     return false;
   }
 
@@ -76,8 +77,10 @@ class FFList extends React.Component {
    * @param {*} data refers to an array of objects of details of each flora / fauna item
    */
   generateDisplay(data) {
-    if (this.state.sortedByDistance) data.sort((a, b) => a.distance - b.distance)
-    let tempList =  data.map((details) => {
+    if (this.state.sortBy == 'distance') data.sort((a, b) => a.distance - b.distance)
+    else data.sort((a, b) => a.name < b.name ? -1 : 1)
+
+    return data.map((details) => {
       let {id, name, description, imageRef} = details;
       let imageUrl = this.state.firebaseDownloadURLs[imageRef];
       if (this.isSearched(details) && !this.isFiltered(id)) {
@@ -99,11 +102,11 @@ class FFList extends React.Component {
             
             <View style={styles.listItemTextHolder}>
   
-              <View style={{flex:0.3}}>
+              <View style={{flex:3}}>
                 <Text style={styles.miniTitle}>{name}</Text>
               </View>
   
-              <View style={{flex:0.7}}>
+              <View style={{flex:7}}>
                 <Text ellipsizeMode='tail' numberOfLines={3} style={styles.miniDesc}>
                   {description}
                 </Text>
@@ -116,17 +119,7 @@ class FFList extends React.Component {
         //All entries need a return value
         return null;
       }
-    });
-
-    let sortedList = [];
-    //Remove all null entries before returning
-    for (var i = 0; i < tempList.length; i++) {
-      let entry = tempList[i];
-      if(entry != null){
-        sortedList.push(entry);
-      }
-    }
-    return sortedList;
+    }).filter(entry => entry != null)
   }
 
   /**
@@ -220,11 +213,20 @@ class FFList extends React.Component {
       );
     }
   }
+
+  updateSettings(newSettings, key = null) {
+    if (key) {
+      let oldSettings = this.state[key]
+      this.setState({[key]: {...oldSettings, ...newSettings}})
+    } else {
+      this.setState(newSettings)
+    }
+  }
   
   componentDidMount() {
     let data = this.props.screenProps.data["flora&fauna"] || {};
-    let ffRaw = Object.values(data)
-    ffRaw.forEach(({imageRef}) => {
+    // get download URLs for each flora and fauna
+    Object.values(data).forEach(({imageRef}) => {
       this.props.screenProps.imagesRef.child(imageRef).getDownloadURL()
       .then(url => {
         let {firebaseDownloadURLs} = this.state;
@@ -233,6 +235,7 @@ class FFList extends React.Component {
       })
     })
 
+    // get user's coordinates
     this.watchId = navigator.geolocation.watchPosition(
       ({coords}) => {
         this.setState({ userCoordinates: {uLat: coords.latitude, uLon: coords.longitude} })
@@ -296,8 +299,14 @@ class FFList extends React.Component {
       cancelButton = null;
     }
 
+    let {type, trail, sortBy} = this.state
     return (
-      <NavigationBar {...this.props}>
+      <NavigationBar
+        enableFilter={['type', 'trail', 'sortBy']}
+        updateSettings={(s, k) => this.updateSettings(s, k)}
+        settings={{type, trail, sortBy}}
+        {...this.props}
+      >
         <Form style={styles.textForm}>
           <Item>
             <Icon type='MaterialIcons' name='search' style={styles.grayIcon} />

@@ -27,6 +27,7 @@ export default class FFEntry extends Component {
   render() {
     let data = this.props.screenProps.data['map']
     let {name, sciName, description, locations} = this.props.navigation.getParam("details");
+    let markers = this.props.navigation.getParam('markers')
     description = this.formatParagraph(description);
 
     let locationButtons = locations.split(',').map(location => {
@@ -38,9 +39,9 @@ export default class FFEntry extends Component {
           style={styles.entryLocationListItem}
           onPress={() => {
             this.props.navigation.navigate({
-              routeName: "Map",
-              params: { location }
+              routeName: "Map"
             })
+            if (location in markers) markers[location].showCallout()
           }}
         >
           <Text style={{flex:1}}>{title}</Text>
