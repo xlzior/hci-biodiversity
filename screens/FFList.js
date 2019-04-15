@@ -26,7 +26,6 @@ const distanceBetween = (lat1, lon1, lat2, lon2) => {
 class FFList extends React.Component {
   state = {
     searchTerm: "",
-    searchCriteria: "All",
     firebaseDownloadURLs: {},
     userCoordinates: {},
     geoNoPerm: false,
@@ -64,12 +63,18 @@ class FFList extends React.Component {
    * @returns whether or not the entry has been filtered by the search criteria
    * @param {*} entry refers to the entry dictionary to be checked
    */
-  isFiltered(entry){
-    if(this.state.searchCriteria == "All") 
-      return false; //No criteria set, so nothing's filtered
-    if(entry.startsWith(this.state.searchCriteria)) 
-      return false; //Fulfills critera, so not filtered
-    return true; //Failed criteria and is filtered.
+  isFiltered(details){
+    let {id, locations} = details;
+    if(id.startsWith("flora-") && !this.state.type.flora) 
+      return true;
+    if(id.startsWith("fauna-") && !this.state.type.fauna) 
+      return true;
+    
+    if(this.state.trail != "all"){
+      if(!locations.includes(this.state.trail))
+        return true;
+    }
+    return false; //Passed criterias.
   }
 
   /**
@@ -83,7 +88,7 @@ class FFList extends React.Component {
     return data.map((details) => {
       let {id, name, description, imageRef} = details;
       let imageUrl = this.state.firebaseDownloadURLs[imageRef];
-      if (this.isSearched(details) && !this.isFiltered(id)) {
+      if (this.isSearched(details) && !this.isFiltered(details)) {
         return (
           <ListItem
             style={styles.listItems}
@@ -134,7 +139,7 @@ class FFList extends React.Component {
       let floraDivider = null;
       
       //Removes the header if search criteria is only flora or only fauna
-      if(this.state.searchCriteria == "All"){
+      if(this.state.type.flora && this.state.type.fauna){
         faunaDivider = (
           <ListItem itemDivider>
             <Text style={[styles.leftTitle2,{marginTop:0}]}>Fauna</Text>
@@ -169,7 +174,7 @@ class FFList extends React.Component {
         </ScrollView>
       );
 
-    }else if(this.state.searchCriteria != "All"){
+    }else if(this.state.type.flora != this.state.type.fauna){
       //Return filtered list (Either only flora or only fauna)
       return (
         <ScrollView>
@@ -184,7 +189,7 @@ class FFList extends React.Component {
       return (
         <View style={styles.container}>
             <TouchableOpacity onPress={
-              ()=>{this.setState({searchCriteria: "flora"});}
+              ()=>{this.setState({type: {flora:true,fauna:false}});}
             }>
               <ImageBackground
                 style={styles.ffListCircleImageBackground} 
@@ -198,7 +203,7 @@ class FFList extends React.Component {
             </TouchableOpacity>
           
             <TouchableOpacity onPress={
-              ()=>{this.setState({searchCriteria: "fauna"});}
+              ()=>{this.setState({type: {fauna: true,flora:false}});}
             }>
               <ImageBackground
                 style={styles.ffListCircleImageBackground} 
@@ -288,14 +293,14 @@ class FFList extends React.Component {
       <Icon type='MaterialIcons' name='cancel' style={styles.grayIcon} //Cancel icon button
         onPress={() => {
           this.searchBarElement.current.clear();
-          this.setState({searchTerm:"",searchCriteria:"All"});
+          this.setState({searchTerm:"",type:{flora:true,fauna:true}});
         }}
       />
     );
 
     //Hide the cancel button if there's no search term.
     if((this.state.searchTerm == null||this.state.searchTerm == "")
-    &&(this.state.searchCriteria == "All")){
+    && (this.state.type.flora == this.state.type.fauna)){
       cancelButton = null;
     }
 
@@ -321,21 +326,6 @@ class FFList extends React.Component {
               style={styles.searchBar}
             />
             {cancelButton}
-            <Picker //Code for the criteria picker (All, Flora, Fauna)
-              mode="dropdown"
-              iosIcon={<Icon name="arrow-down" />}
-              style={{  }}
-              placeholder="All"
-              placeholderIconColor="#007aff"
-              selectedValue={this.state.searchCriteria}
-              onValueChange={searchCriteria => {
-                this.setState({searchCriteria});
-              }}
-            >
-              <Picker.Item label="All" value="All" />
-              <Picker.Item label="Flora" value="flora" />
-              <Picker.Item label="Fauna" value="fauna" />
-            </Picker>
           </Item>
         </Form>
         {body}
