@@ -1,5 +1,5 @@
 import React from 'react';
-import { ImageBackground, Image, TouchableOpacity, Animated, View, Dimensions } from 'react-native';
+import { ImageBackground, Image, TouchableOpacity, Animated, Dimensions } from 'react-native';
 import getFFEntryDetails from '../constants/FFEntryFetcher';
 
 export default class ClickableImage extends React.Component {
@@ -31,9 +31,14 @@ export default class ClickableImage extends React.Component {
     // rotate the image if it's in landscape orientation
     let style = landscape ?
     {
-      height: phoneWidth+20,
-      width: phoneHeight-50,
-      transform: [{ rotate: '90deg' }, { translateY: phoneWidth/3 }, { translateX: 100 }]
+      position: 'absolute',
+      top: phoneWidth/2.568493151,
+      left: -phoneWidth/2.568493151,
+      right: 0,
+      bottom: 0,
+      height: phoneWidth,
+      width: phoneHeight,
+      transform: [{rotate: '90deg'}]
     } :
     {
       height: '100%',
@@ -49,19 +54,20 @@ export default class ClickableImage extends React.Component {
           height={this.state.height}
           width={this.state.width}
           landscape={landscape}
+          phoneWidth={phoneWidth}
         />
       )
     })
-
     if (!this.props.image) return null
     return (
       <ImageBackground
         source={this.props.image}
         style={style}
         onLayout={(e) => {
-          let {height, width} = e.nativeEvent.layout
+          let {height, width} = e.nativeEvent.layout;
           this.setState({height, width})
         }}
+        ref={view => this.imageBackground = view}
       >
       {this.state.height > 0 ? pulsingCircles : null}
       </ImageBackground>
@@ -74,8 +80,7 @@ const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpaci
 class PulsingCircle extends React.Component {
   constructor(props) {
     super(props)
-    let { size, top, left, height, width } = this.props;
-    console.log('pulsing circle dimensions', height, width)
+    let { size, top, left, height, width, landscape, phoneWidth } = this.props;
     let scaledTop = top*height-size/2
     let scaledLeft = left*width-size/2
     this.state = {
@@ -108,18 +113,9 @@ class PulsingCircle extends React.Component {
 
   render() {
     let { animSize, animTop, animLeft } = this.state;
-    let { params, data, landscape } = this.props;
+    let { params, data } = this.props;
     let details = getFFEntryDetails(params.name,data);
 
-    let shiftedPositions = landscape ?
-    {
-      right: animTop,
-      top: animLeft
-    } :
-    {
-      top: animTop,
-      left: animLeft
-    }
     return (
       <AnimatedTouchableOpacity
         style={{
@@ -129,7 +125,8 @@ class PulsingCircle extends React.Component {
           borderRadius: animSize,
           height: animSize,
           width: animSize,
-          ...shiftedPositions
+          top: animTop,
+          left: animLeft
         }}
         onPress={() => this.props.navigation.navigate({
           routeName: 'FFEntry',

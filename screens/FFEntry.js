@@ -18,6 +18,8 @@ export default class FFEntry extends Component {
 
   componentDidMount() {
     let {imageRef} = this.props.navigation.getParam("details");
+    // TODO: accept array imageRefs
+    if (Array.isArray(imageRef)) imageRef = imageRef[0]
     this.props.screenProps.imagesRef.child(imageRef).getDownloadURL()
     .then(imageURL => {
       this.setState({ imageURL })
@@ -27,7 +29,7 @@ export default class FFEntry extends Component {
   render() {
     let data = this.props.screenProps.data['map']
     let {name, sciName, description, locations} = this.props.navigation.getParam("details");
-    let markers = this.props.navigation.getParam('markers')
+    let markers = this.props.navigation.getParam('markers', {})
     description = this.formatParagraph(description);
 
     let locationButtons = locations.split(',').map(location => {

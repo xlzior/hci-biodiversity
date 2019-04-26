@@ -80,12 +80,7 @@ export default class App extends React.Component {
     cacheImages([
       require('./assets/fauna.jpg'),
       require('./assets/flora.jpg'),
-      require('./assets/homeimage.png'),
-      //"https://firebasestorage.googleapis.com/v0/b/hci-biodiversity.appspot.com/o/images%2Fmaps%2Fmap_all.png?alt=media&token=669b3b25-4bc0-4346-b8d9-e4d0763d2e67",
-      //"https://firebasestorage.googleapis.com/v0/b/hci-biodiversity.appspot.com/o/images%2Fmaps%2Fmap_trail1.png?alt=media&token=669b3b25-4bc0-4346-b8d9-e4d0763d2e67",
-      //"https://firebasestorage.googleapis.com/v0/b/hci-biodiversity.appspot.com/o/images%2Fmaps%2Fmap_trail2.png?alt=media&token=669b3b25-4bc0-4346-b8d9-e4d0763d2e67",
-      //"https://firebasestorage.googleapis.com/v0/b/hci-biodiversity.appspot.com/o/images%2Fmaps%2Fmap_trail3.png?alt=media&token=669b3b25-4bc0-4346-b8d9-e4d0763d2e67",
-
+      require('./assets/homeimage.png')
     ]);
     
     let dataLoading = this.fetchFromFirebase(this.datastoreRef);
@@ -97,7 +92,10 @@ export default class App extends React.Component {
 
   async componentDidMount() {
 	  this.loadData()
-    .then(() => this.setState({ dataLoaded: true}))
+    .then(() => {
+      this.setState({ dataLoaded: true})
+      console.log("Done loading data");
+    })
   }
 }
 

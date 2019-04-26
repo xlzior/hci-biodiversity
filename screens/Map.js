@@ -28,7 +28,6 @@ class MapComponent extends React.Component {
     this.state = {
       firebaseDownloadURLs: {},
       showBird: null,
-      mapURL: "",
       birds: {},
       type: {
         flora: true,
@@ -41,11 +40,6 @@ class MapComponent extends React.Component {
 
   componentDidMount() {
     let {data, imagesRef} = this.props.screenProps;
-
-    imagesRef.child('maps/map_all.png').getDownloadURL()
-    .then(mapURL => {
-      this.setState({mapURL});
-    })
 
     // getting firebase download URLs for all birds and route points
     let allImages = []
@@ -60,14 +54,19 @@ class MapComponent extends React.Component {
         if (ff.indexOf('fauna') >= 0) birds[ff] = data['flora&fauna'][ff]
       }
     }
-    this.setState({birds})
+
     allImages.push(...Object.values(birds).map(bird => bird.imageRef))
     allImages.forEach(imageRef => {
+      // TODO: accept array imageRefs
+      let {firebaseDownloadURLs} = this.state;
+      if (Array.isArray(imageRef)) imageRef = imageRef[0]
       imagesRef.child(imageRef).getDownloadURL()
       .then(url => {
-        let {firebaseDownloadURLs} = this.state;
         firebaseDownloadURLs[imageRef] = url
         this.setState({ firebaseDownloadURLs })
+      })
+      .catch(() => {;
+        console.log('imageRef not found', imageRef);
       })
     })
 
@@ -198,11 +197,10 @@ class MapComponent extends React.Component {
           }}
           showsUserLocation={true}
         >
-        {this.state.mapURL ? <Overlay
-          //image={require('../assets/maptest.png')}
-          image={{uri: this.state.mapURL}}
+        <Overlay
+          image={require('../assets/maps/map_all.png')}
           bounds={[[1.328214, 103.800920], [1.324215, 103.807922]]}
-        /> : null}
+        />
         {display}
         </MapView>
       </NavigationBar>
