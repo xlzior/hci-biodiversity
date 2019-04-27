@@ -6,7 +6,7 @@ import ClickableImage from './ClickableImage'
 export default class Overview extends Component {
   static navigationOptions = ({ navigation }) => {
     return {
-      title: "Overview"
+      title: navigation.getParam('title')
     };
   };
 
@@ -16,7 +16,7 @@ export default class Overview extends Component {
     let points = this.props.navigation.getParam('points')
     let image = uri ? {uri} : null;
     return (
-      <Content contentContainerStyle={{flex: 1, display: 'flex'}}>
+      <Content contentContainerStyle={{height: '120%'}}>
         <ClickableImage
           {...this.props}
           points={points}

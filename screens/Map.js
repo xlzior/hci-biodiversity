@@ -26,7 +26,6 @@ class MapComponent extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      firebaseDownloadURLs: {},
       showBird: null,
       birds: {},
       type: {
@@ -39,14 +38,7 @@ class MapComponent extends React.Component {
   }
 
   componentDidMount() {
-    let {data, imagesRef} = this.props.screenProps;
-
-    // getting firebase download URLs for all birds and route points
-    let allImages = []
-    let routes = "map" in data ? Object.values(data["map"]) : []
-    routes.map(({route}) => {
-      allImages.push(...Object.values(route).map(entry => entry.imageRef))
-    })
+    let {data} = this.props.screenProps;
 
     let birds = {}
     if ('flora&fauna' in data) {
@@ -54,21 +46,6 @@ class MapComponent extends React.Component {
         if (ff.indexOf('fauna') >= 0) birds[ff] = data['flora&fauna'][ff]
       }
     }
-
-    allImages.push(...Object.values(birds).map(bird => bird.imageRef))
-    allImages.forEach(imageRef => {
-      // TODO: accept array imageRefs
-      let {firebaseDownloadURLs} = this.state;
-      if (Array.isArray(imageRef)) imageRef = imageRef[0]
-      imagesRef.child(imageRef).getDownloadURL()
-      .then(url => {
-        firebaseDownloadURLs[imageRef] = url
-        this.setState({ firebaseDownloadURLs })
-      })
-      .catch(() => {;
-        console.log('imageRef not found', imageRef);
-      })
-    })
 
     this.setState({birds}) // save in state for future reference without reevaluating
   }
@@ -86,8 +63,7 @@ class MapComponent extends React.Component {
       if (trail == "all" || trail == trailId || type.flora) {
         for (let routeId in route) {
           let {title, latitude, longitude, imageRef, points} = route[routeId]
-          let url = this.state.firebaseDownloadURLs[imageRef]
-          
+          // TRAIL ROUTE MARKERS
           markers.push(
             <Marker
               key={title}
@@ -98,14 +74,14 @@ class MapComponent extends React.Component {
               <Callout
                 onPress={() => this.props.navigation.navigate({
                   routeName: 'Overview',
-                  params: { url, points: points },
+                  params: { title, url: imageRef, points: points },
                   goBack: "Map"
                 })}
               >
                 <Text>{title}</Text>
                 <Image
-                  style={{ width: 100, height: 100 }}
-                  source={{ uri: url }}
+                  style={{ width: '100%', height: 100 }}
+                  source={{ uri: imageRef }}
                 />
               </Callout>
             </Marker>
@@ -117,7 +93,6 @@ class MapComponent extends React.Component {
     /* BIRDS */
     let {birds} = this.state, birdIds, birdRegions, birdMarkers, displayedBirdRegion
     if (type.fauna) {
-  
       birdIds = Object.keys(birds)
       birdRegions = {}
       birdMarkers = Object.values(birds).map(({name, latitude, longitude, area}, index) => {
@@ -140,17 +115,28 @@ class MapComponent extends React.Component {
                 goBack: "Map"
               })
             }}
-            />
+          />
         )
+        let {imageRef} = details;
+        // Map only displays the first image of each bird
+        if (Array.isArray(imageRef)) imageRef = imageRef[0]
+
         return (
           <Marker
             key={birdId}
             title={name}
             coordinate={{latitude, longitude}}
             onPress={() => this.setState({showBird: birdId})}
+            onCalloutPress={() => {
+              this.props.navigation.navigate({
+                routeName: "FFEntry",
+                params: {details, markers: this.markers},
+                goBack: "Map"
+              })
+            }}
           >
             <Image
-              source={{uri: this.state.firebaseDownloadURLs[details.imageRef]}}
+              source={{uri: imageRef}}
               style={{height: 40, width: 40, borderRadius: 20}}
             />
           </Marker>

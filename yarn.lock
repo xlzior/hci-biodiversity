@@ -4222,6 +4222,10 @@ react-native-gesture-handler@~1.0.14:
     invariant "^2.2.2"
     prop-types "^15.5.10"
 
+react-native-image-view@^2.1.4:
+  version "2.1.4"
+  resolved "https://registry.yarnpkg.com/react-native-image-view/-/react-native-image-view-2.1.4.tgz#47faa6c42588e7509f530561a53d3b13eaa5e9bc"
+
 react-native-iphone-x-helper@^1.0.3:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/react-native-iphone-x-helper/-/react-native-iphone-x-helper-1.2.0.tgz#9f8a376eb00bc712115abff4420318a0063fa796"

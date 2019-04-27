@@ -1,34 +1,27 @@
 
 import React, { Component } from 'react';
+import { Image, TouchableOpacity } from 'react-native';
 import { View, Text, Content, Icon, ListItem, Right } from 'native-base';
+import FullWidthImage from '../constants/FullWidthImage'
+import ImageView from 'react-native-image-view';
 
-import FullWidthImage from '../constants/FullWidthImage';
 import styles from '../constants/Style';
 
 export default class FFEntry extends Component {
+  state = {
+    isImageViewVisible: false
+  }
   static navigationOptions = ({ navigation }) => {
     return {
       title: navigation.getParam("details")["name"],
     };
   };
 
-  state = {
-    imageURL: ""
-  }
-
-  componentDidMount() {
-    let {imageRef} = this.props.navigation.getParam("details");
-    // TODO: accept array imageRefs
-    if (Array.isArray(imageRef)) imageRef = imageRef[0]
-    this.props.screenProps.imagesRef.child(imageRef).getDownloadURL()
-    .then(imageURL => {
-      this.setState({ imageURL })
-    })
-  }
-
   render() {
     let data = this.props.screenProps.data['map']
-    let {name, sciName, description, locations} = this.props.navigation.getParam("details");
+    let {name, sciName, description, locations, imageRef} = this.props.navigation.getParam("details");
+
+    let images = imageRef.map(src => ({source: { uri: src }}))
     let markers = this.props.navigation.getParam('markers', {})
     description = this.formatParagraph(description);
 
@@ -63,8 +56,18 @@ export default class FFEntry extends Component {
       <Content>
         <View>
           {
-            this.state.imageURL ?
-            <FullWidthImage source={{uri: this.state.imageURL}}/> :
+            imageRef ?
+            <View>
+              <TouchableOpacity onPress={()=>this.setState({isImageViewVisible: true})}>
+                <FullWidthImage source={images[0].source} />
+              </TouchableOpacity>
+              <ImageView
+                images={images}
+                imageIndex={0}
+                isVisible={this.state.isImageViewVisible}
+                onClose={()=>this.setState({isImageOpen: false})}
+              />
+            </View> :
             null
           }
         </View>

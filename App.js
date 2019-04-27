@@ -52,8 +52,7 @@ export default class App extends React.Component {
 
     return (
       <RootDrawer screenProps={{
-        data: this.state.data,
-        imagesRef: firebase.storage().ref().child("images")
+        data: this.state.data
       }}/>
     );
   }
@@ -87,8 +86,6 @@ export default class App extends React.Component {
     
     return Promise.all([dataLoading, fontLoading])
   }
-
-  
 
   async componentDidMount() {
 	  this.loadData()

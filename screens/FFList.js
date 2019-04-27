@@ -26,7 +26,6 @@ const distanceBetween = (lat1, lon1, lat2, lon2) => {
 class FFList extends React.Component {
   state = {
     searchTerm: "",
-    firebaseDownloadURLs: {},
     userCoordinates: {},
     geoNoPerm: false,
     type: {
@@ -87,7 +86,8 @@ class FFList extends React.Component {
 
     return data.map((details) => {
       let {id, name, description, imageRef} = details;
-      let imageUrl = this.state.firebaseDownloadURLs[imageRef];
+      // FFList only displays the first image
+      if (Array.isArray(imageRef)) imageRef = imageRef[0]
       if (this.isSearched(details) && !this.isFiltered(details)) {
         return (
           <ListItem
@@ -101,7 +101,7 @@ class FFList extends React.Component {
             <View style={styles.listItemImageHolder}>
               <Image
                 style={{height: 100}}
-                source={{uri: imageUrl}}
+                source={{uri: imageRef}}
                 resizeMode='cover'/>
             </View>
             
@@ -230,20 +230,6 @@ class FFList extends React.Component {
   
   componentDidMount() {
     let data = this.props.screenProps.data["flora&fauna"] || {};
-    // get download URLs for each flora and fauna
-    Object.values(data).forEach(({imageRef}) => {
-      // TODO: accept array imageRefs
-      let {firebaseDownloadURLs} = this.state;
-      if (Array.isArray(imageRef)) imageRef = imageRef[0]
-      this.props.screenProps.imagesRef.child(imageRef).getDownloadURL()
-      .then(url => {
-        firebaseDownloadURLs[imageRef] = url
-        this.setState({ firebaseDownloadURLs })
-      })
-      .catch(() => {;
-        console.log('imageRef not found', imageRef);
-      })
-    })
 
     // get user's coordinates
     this.watchId = navigator.geolocation.watchPosition(
