@@ -73,6 +73,7 @@ export default class App extends React.Component {
       'Roboto': require('native-base/Fonts/Roboto.ttf'),
       'Roboto_medium': require('native-base/Fonts/Roboto_medium.ttf'),
       'Lato': require('./assets/Lato-Regular.ttf'),
+      'Lato-Italic': require('./assets/Lato-Italic.ttf'),
       'Precious': require('./assets/Precious.ttf')
     });
     

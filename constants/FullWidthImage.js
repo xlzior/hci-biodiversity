@@ -11,6 +11,19 @@ export default class FullWidthImage extends Component {
       height: 0
     };
   }
+
+  componentWillMount(){
+    this.mounted = true;
+  }
+
+  componentWillUnmount(){
+    this.mounted = false;
+  }
+
+  setState(state){
+    if(this.mounted)
+      super.setState(state);
+  }
   
   _onLayout(event) {
     const containerWidth = Dimensions.get('window').width;

@@ -66,11 +66,18 @@ const styles = StyleSheet.create({
   subtitle: { //For General Use (left Aligned)
     textAlign: 'left',
     fontSize: 17,
-    fontStyle: 'italic',
     color: '#616B75',
     fontWeight: '400',
     marginTop: 5,
     fontFamily: 'Lato'
+  },
+  italicSubtitle: { //For General Use (left Aligned)
+    textAlign: 'left',
+    fontSize: 17,
+    color: '#616B75',
+    fontWeight: '400',
+    marginTop: 5,
+    fontFamily: 'Lato-Italic'
   },
   description: { //For General Use (Left Aligned)
     textAlign: 'left',
