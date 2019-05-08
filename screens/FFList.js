@@ -85,9 +85,8 @@ class FFList extends React.Component {
     else data.sort((a, b) => a.name < b.name ? -1 : 1)
 
     return data.map((details) => {
-      let {id, name, description, imageRef} = details;
+      let {id, name, description, smallImage} = details;
       // FFList only displays the first image
-      if (Array.isArray(imageRef)) imageRef = imageRef[0]
       if (this.isSearched(details) && !this.isFiltered(details)) {
         return (
           <ListItem
@@ -101,7 +100,7 @@ class FFList extends React.Component {
             <View style={styles.listItemImageHolder}>
               <Image
                 style={{height: 100}}
-                source={{uri: imageRef}}
+                source={{uri: smallImage}}
                 resizeMode='cover'/>
             </View>
             

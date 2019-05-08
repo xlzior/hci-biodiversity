@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Image, Dimensions } from 'react-native';
+import { Dimensions, Image } from 'react-native';
 import { View } from 'native-base';
 
 export default class FullWidthImage extends Component {
