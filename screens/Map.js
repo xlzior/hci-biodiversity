@@ -72,7 +72,7 @@ class MapComponent extends React.Component {
       let {name, color, route, markers} = map[trailId]
       if (trail == "all" || trail == trailId || type.flora) {
         for (let routeId in route) { // for each point in the trail
-          let {title, latitude, longitude, imageRef, points} = route[routeId]
+          let {title, latitude, longitude, smallImage, imageRef, points} = route[routeId]
           // TRAIL ROUTE MARKERS
           markers.push(
             <Marker
@@ -99,7 +99,7 @@ class MapComponent extends React.Component {
                 </Text>
                 <Image
                   style={{ width: '100%', height: 100 }}
-                  source={{ uri: imageRef }}
+                  source={{ uri: smallImage }}
                 />
               </Callout>
             </Marker>

@@ -125,7 +125,7 @@ class FFList extends React.Component {
             <View style={styles.listItemTextHolder}>
   
               <View style={{flex:3}}>
-                <Text style={styles.miniTitle}>{name}</Text>
+                <Text ellipsizeMode='tail' numberOfLines={1} style={styles.miniTitle}>{name}</Text>
               </View>
   
               <View style={{flex:7}}>

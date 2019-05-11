@@ -13,6 +13,19 @@ export default class ClickableImage extends React.Component {
     }
   }
 
+  componentWillMount(){
+    this.mounted = true;
+  }
+
+  componentWillUnmount(){
+    this.mounted = false;
+  }
+
+  setState(state){
+    if(this.mounted)
+      super.setState(state);
+  }
+
   componentDidMount() {
     if (this.props.image && 'uri' in this.props.image) {
       Image.getSize(this.props.image.uri, (imageHeight, imageWidth) => {
