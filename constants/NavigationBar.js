@@ -30,7 +30,7 @@ export default class NavigationBar extends Component {
           </Body>
           {right}
         </Header>
-        <Content contentContainerStyle={{flex: 1, display: 'flex'}}>
+        <Content>
           {this.props.children}
         </Content>
         {this.props.enableFilter &&

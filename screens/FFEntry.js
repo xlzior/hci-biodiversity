@@ -21,7 +21,7 @@ export default class FFEntry extends Component {
     let data = this.props.screenProps.data['map']
     let {name, sciName, description, locations, imageRef} = this.props.navigation.getParam("details");
 
-    let images = imageRef.map(src => ({source: { uri: src }}))
+    let images = imageRef.map(src => src ? ({source: { uri: src }}) : null)
     let markers = this.props.navigation.getParam('markers', {})
     description = this.formatParagraph(description);
 
@@ -76,7 +76,7 @@ export default class FFEntry extends Component {
             <Text style={styles.leftTitle}>{name}</Text>
             <Text style={styles.subtitle}>{this.formatSciName(sciName)}</Text>
 
-            <Text style={styles.description}>{description}</Text>
+            <Text style={[styles.description, {textAlign: 'justify'}]}>{description}</Text>
             <Text>{'\n'}</Text>
             <Text style={styles.leftTitle2}>Locations: </Text>
             {locationButtons}
@@ -151,7 +151,6 @@ export default class FFEntry extends Component {
       if(section.endsWith("'")){
         italicise = !italicise;
       }else if(section.endsWith(")")){
-        console.log("Non-ital");
         italicise = true;
       }
 

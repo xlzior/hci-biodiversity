@@ -1,4 +1,5 @@
 import React from 'react';
+import { Location, Permissions } from 'expo';
 import { Image, ImageBackground, View, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { Text, List, ListItem, Form, Item, Icon } from 'native-base';
 import { createStackNavigator } from 'react-navigation';
@@ -24,6 +25,11 @@ const distanceBetween = (lat1, lon1, lat2, lon2) => {
 }
 
 class FFList extends React.Component {
+  constructor(props){
+    super(props);
+    this.searchBarElement = React.createRef();
+  }
+
   state = {
     searchTerm: "",
     userCoordinates: {},
@@ -36,10 +42,22 @@ class FFList extends React.Component {
     sortBy: "alphabetical"
   }
 
-  constructor(props){
-    super(props);
-    this.searchBarElement = React.createRef();
+  componentDidMount() {
+    // TODO: check location every 1min?
+    this._getLocationAsync()
   }
+
+  /**
+   * Gets the user's location and stores in state
+   */
+  _getLocationAsync = async () => {
+    let { status } = await Permissions.askAsync(Permissions.LOCATION);
+    if (status == 'granted') {
+      let location = await Location.getCurrentPositionAsync({enableHighAccuracy: true});
+      let {latitude, longitude} = location.coords
+      this.setState({ userCoordinates: {uLat: latitude, uLon: longitude} });
+    }
+  };
 
   /**
    * Checks if the details of an entry were searched for in searchTerm
@@ -218,6 +236,9 @@ class FFList extends React.Component {
     }
   }
 
+  /**
+   * Callback function for NavigationBar's filtering features
+   */
   updateSettings(newSettings, key = null) {
     if (key) {
       let oldSettings = this.state[key]
@@ -225,29 +246,6 @@ class FFList extends React.Component {
     } else {
       this.setState(newSettings)
     }
-  }
-  
-  componentDidMount() {
-    let data = this.props.screenProps.data["flora&fauna"] || {};
-
-    // get user's coordinates
-    this.watchId = navigator.geolocation.watchPosition(
-      ({coords}) => {
-        this.setState({ userCoordinates: {uLat: coords.latitude, uLon: coords.longitude} })
-      },
-      (err) => {
-        if(err.code == "E_NO_PERMISSIONS"){
-          Alert.alert("Geolocation Disabled","Location sorting will not work.");
-        }else{
-          console.error(`ERROR(${err.code}): ${err.message}`)
-        }
-      },
-      options
-    );
-  }
-
-  componentWillUnmount() {
-    navigator.geolocation.clearWatch(this.watchId)
   }
 
   render() {
@@ -258,21 +256,23 @@ class FFList extends React.Component {
 
     // TODO: figure out how often this is running
     // Tidy up the data for each flora / fauna element in Firebase and calculate the distance
-    for (let entry in ffData){
-      let details = ffData[entry];
-      if (details.locations != "") {
-        // Calculate how far away this flora / fauna can be found
-        let distances = details.locations.split(',').map(id => {
-          let [trailId, routeId] = id.split('/')
-          let {latitude, longitude} = mapData[trailId]['route'][routeId]
-          let {uLat, uLon} = this.state.userCoordinates
-          return distanceBetween(latitude, longitude, uLat, uLon) * 1000
-        })
-        let distance = Math.min(...distances)
-  
-        details = {id: entry, ...details, distance}
-        if (entry.startsWith("flora-")) flora.push(details)
-        else if (entry.startsWith("fauna-")) fauna.push(details)
+    let {uLat, uLon} = this.state.userCoordinates
+    if (uLat && uLon) {
+      for (let entry in ffData){
+        let details = ffData[entry];
+        if (details.locations != "") {
+          // Calculate how far away this flora / fauna can be found
+          let distances = details.locations.split(',').map(id => {
+            let [trailId, routeId] = id.split('/')
+            let {latitude, longitude} = mapData[trailId]['route'][routeId]
+            return distanceBetween(latitude, longitude, uLat, uLon) * 1000
+          })
+          let distance = Math.min(...distances)
+    
+          details = {id: entry, ...details, distance}
+          if (entry.startsWith("flora-")) flora.push(details)
+          else if (entry.startsWith("fauna-")) fauna.push(details)
+        }
       }
     }
 

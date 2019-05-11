@@ -44,14 +44,15 @@ export default class FullWidthImage extends Component {
   
   render() {
     return (
-      <View style={{backgroundColor:'#ededed'}} onLayout={this._onLayout.bind(this)}>
-      <Image
-      source={this.props.source}
-      style={{
-        width: this.state.width,
-        height: this.state.height
-      }} />
+      <View style={{backgroundColor:'#ededed'}} onLayout={e => this._onLayout(e)}>
+        <Image
+          source={this.props.source}
+          style={{
+            width: this.state.width,
+            height: this.state.height
+          }}
+        />
       </View>
-      );
-    }
+    );
   }
+}

@@ -1,6 +1,7 @@
 {
   "expo": {
-    "name": "Garden Campus",
+    "name": "HC Garden",
+    "description": "",
     "slug": "hci-biodiversity",
     "privacy": "public",
     "sdkVersion": "32.0.0",
@@ -10,10 +11,10 @@
     ],
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/App Icon 1024.png",
     "splash": {
       "image": "./assets/splash.png",
-      "resizeMode": "contain",
+      "resizeMode": "cover",
       "backgroundColor": "#ffffff"
     },
     "updates": {
@@ -23,11 +24,21 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "bundleIdentifier": "com.hci.biodiversity2019",
+      "buildNumber": "1",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "This app uses location services to display your location in the map for ease of navigation."
+      }
+    },
+    "android": {
+      "package": "com.hci.biodiversity2019",
+      "permissions": [
+        "ACCESS_FINE_LOCATION"
+      ],
+      "versionCode": 1
     },
     "androidStatusBar": {
       "barStyle": "dark-content"
-    },
-    "description": ""
+    }
   }
 }

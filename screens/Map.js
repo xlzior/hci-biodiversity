@@ -12,6 +12,16 @@ import Overview from './Overview'
 import FFEntry from './FFEntry';
 
 class MapComponent extends React.Component {
+  async componentDidMount() {
+    const { Location, Permissions } = Expo;
+    const { status } = await Permissions.askAsync(Permissions.LOCATION);
+    if (status === 'granted') {
+      return Location.getCurrentPositionAsync({enableHighAccuracy: true});
+    } else {
+      throw new Error('Location permission not granted');
+    }
+  }
+
   markers = {}
 
   updateSettings(newSettings, key = null) {
@@ -57,11 +67,11 @@ class MapComponent extends React.Component {
 
     /* ROUTE */
 
-    for (let trailId in map) {
+    for (let trailId in map) { // for each trail
       map[trailId]["markers"] = []
       let {name, color, route, markers} = map[trailId]
       if (trail == "all" || trail == trailId || type.flora) {
-        for (let routeId in route) {
+        for (let routeId in route) { // for each point in the trail
           let {title, latitude, longitude, imageRef, points} = route[routeId]
           // TRAIL ROUTE MARKERS
           markers.push(
@@ -74,11 +84,19 @@ class MapComponent extends React.Component {
               <Callout
                 onPress={() => this.props.navigation.navigate({
                   routeName: 'Overview',
-                  params: { title, url: imageRef, points: points },
+                  params: { title, points, url: imageRef },
                   goBack: "Map"
                 })}
               >
-                <Text>{title}</Text>
+                <Text
+                  style={{
+                    minWidth: 100,
+                    maxWidth: 180,
+                    textAlign: "center"
+                  }}
+                >
+                  {title}
+                </Text>
                 <Image
                   style={{ width: '100%', height: 100 }}
                   source={{ uri: imageRef }}
@@ -96,6 +114,7 @@ class MapComponent extends React.Component {
       birdIds = Object.keys(birds)
       birdRegions = {}
       birdMarkers = Object.values(birds).map(({name, latitude, longitude, area}, index) => {
+        if (!latitude) return null; // return null if this fauna does not have latitude and longitude data
         let birdId = birdIds[index]
         let details = getFFEntryDetails(birdId, this.props.screenProps.data["flora&fauna"])
         birdRegions[birdId] = (
@@ -117,7 +136,7 @@ class MapComponent extends React.Component {
             }}
           />
         )
-        let {imageRef} = details;
+        let {imageRef, smallImage} = details;
         // Map only displays the first image of each bird
         if (Array.isArray(imageRef)) imageRef = imageRef[0]
 
@@ -136,7 +155,7 @@ class MapComponent extends React.Component {
             }}
           >
             <Image
-              source={{uri: imageRef}}
+              source={{uri: smallImage || imageRef}}
               style={{height: 40, width: 40, borderRadius: 20}}
             />
           </Marker>

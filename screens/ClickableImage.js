@@ -53,8 +53,6 @@ export default class ClickableImage extends React.Component {
           key={index}
           height={this.state.height}
           width={this.state.width}
-          landscape={landscape}
-          phoneWidth={phoneWidth}
         />
       )
     })
@@ -80,7 +78,7 @@ const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpaci
 class PulsingCircle extends React.Component {
   constructor(props) {
     super(props)
-    let { size, top, left, height, width, landscape, phoneWidth } = this.props;
+    let { size, top, left, height, width } = this.props;
     let scaledTop = top*height-size/2
     let scaledLeft = left*width-size/2
     this.state = {

@@ -12,7 +12,7 @@ export default class HomeScreen extends React.Component {
       <NavigationBar {...this.props}>
         <Image  
           style={styles.image}
-          source={require('../assets/homeimage.png')}
+          source={require('../assets/homeimage.jpg')}
         />
         <View style={styles.container}>
           <Text style={styles.title}>

@@ -1,8 +1,6 @@
 import React from 'react';
-import {Image} from 'react-native';
-import { Text, View } from 'native-base';
-import { Font, Asset } from 'expo';
-import styles from './constants/Style';
+import { Image } from 'react-native';
+import { Font, Asset, AppLoading } from 'expo';
 import { createDrawerNavigator, createAppContainer } from 'react-navigation';
 
 import * as firebase from 'firebase';
@@ -30,7 +28,6 @@ function cacheImages(images) {
   });
 }
 
-
 export default class App extends React.Component {
   constructor(props) {
     super(props);
@@ -41,35 +38,21 @@ export default class App extends React.Component {
     this.datastoreRef = firebaseApp.database().ref();
   }
 
-  render() {
-    if (!this.state.dataLoaded) {
-      return (
-        <View style={styles.center}>
-          <Text>Loading...</Text>
-        </View>
-      );
-    }
-
-    return (
-      <RootDrawer screenProps={{
-        data: this.state.data
-      }}/>
-    );
-  }
-
   fetchFromFirebase(datastoreRef) {
     let data = {}
-    datastoreRef.once("value", datastore => {
+    return datastoreRef.once("value", datastore => {
       datastore.forEach(element => {
         data[element.key] = element.val();
       });
     }).then(() => {
       this.setState({data})
+    }).catch(() => {
+      console.log('Failed to fetch data from firebase')
     })
   }
   
   async loadData(){
-    let fontLoading = Font.loadAsync({
+    let fontAssets = Font.loadAsync({
       'Roboto': require('native-base/Fonts/Roboto.ttf'),
       'Roboto_medium': require('native-base/Fonts/Roboto_medium.ttf'),
       'Lato': require('./assets/Lato-Regular.ttf'),
@@ -77,23 +60,29 @@ export default class App extends React.Component {
       'Precious': require('./assets/Precious.ttf')
     });
     
-    cacheImages([
+    let imageAssets = cacheImages([
       require('./assets/fauna.jpg'),
       require('./assets/flora.jpg'),
-      require('./assets/homeimage.png')
+      require('./assets/homeimage.jpg')
     ]);
     
-    let dataLoading = this.fetchFromFirebase(this.datastoreRef);
+    let dataAssets = this.fetchFromFirebase(this.datastoreRef);
     
-    return Promise.all([dataLoading, fontLoading])
+    return Promise.all([dataAssets, ...imageAssets, fontAssets])
   }
 
-  async componentDidMount() {
-	  this.loadData()
-    .then(() => {
-      this.setState({ dataLoaded: true})
-      console.log("Done loading data");
-    })
+  render() {
+    if (!this.state.dataLoaded) {
+      return (
+        <AppLoading
+          startAsync={() => this.loadData()}
+          onFinish={() => this.setState({ dataLoaded: true })}
+          onError={console.log}
+        />
+      );
+    }
+
+    return <RootDrawer screenProps={{data: this.state.data}} />;
   }
 }
 
