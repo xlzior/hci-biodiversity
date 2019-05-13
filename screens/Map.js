@@ -1,4 +1,5 @@
 import React from 'react';
+import { Location, Permissions } from 'expo';
 import { Image } from 'react-native';
 import { Text } from 'native-base';
 import Dimensions from 'Dimensions';
@@ -13,7 +14,6 @@ import FFEntry from './FFEntry';
 
 class MapComponent extends React.Component {
   async componentDidMount() {
-    const { Location, Permissions } = Expo;
     const { status } = await Permissions.askAsync(Permissions.LOCATION);
     if (status === 'granted') {
       return Location.getCurrentPositionAsync({enableHighAccuracy: true});

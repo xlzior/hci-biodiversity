@@ -11,7 +11,6 @@ export default class Introduction extends React.Component {
     return (
       <NavigationBar {...this.props}>
         <View style={styles.card}>
-          <Text style={styles.title}>Introduction</Text>
           <Text style={styles.littleTitle}>海天辽阔 云树苍龙 中有我华中</Text>
           <Text>{"\n"}</Text>
           <Text style={styles.description}>Hwa Chong is blessed with a beautiful campus, with a plethora of flora and fauna. The tall trees and extensive bushes in our school stand as testament to many years of cultivation and care. Indeed, their age reflects upon the school’s long-standing dedication as a premier institution that that grooms generations of leaders in research, industry and government.</Text>
