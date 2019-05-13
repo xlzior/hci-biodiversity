@@ -8,6 +8,9 @@ import HomeScreen from './screens/HomeScreen';
 import MapView from './screens/Map';
 import FFList from './screens/FFList';
 import Acknowledgements from './screens/Acknowledgements';
+import CommitteeMessage from './screens/CommitteeMessage';
+import Introduction from './screens/Introduction';
+import History from './screens/History';
 
 const firebaseConfig = {
   apiKey: "AIzaSyBqqlRStr494376E0fE4Fg17LATiUYxNCI",
@@ -88,9 +91,12 @@ export default class App extends React.Component {
 
 const RootDrawer = createAppContainer(createDrawerNavigator({
   Home: HomeScreen,
+  Introduction: Introduction,
   Map: MapView,
   'Flora and Fauna': FFList,
-  Acknowledgements: Acknowledgements
+  History: History,
+  Acknowledgements: Acknowledgements,
+  'Message from the Committee': CommitteeMessage
 },
 {
   initialRouteName: 'Home',

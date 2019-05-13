@@ -33,6 +33,14 @@ const styles = StyleSheet.create({
     marginTop: 15,
     fontFamily: 'Lato'
   },
+  littleTitle: { //Used generally.
+    textAlign: 'center',
+    fontSize: 23,
+    color: '#646D77',
+    fontWeight: '200',
+    marginTop: 15,
+    fontFamily: 'Lato-Italic'
+  },
   subtext: { //For main page (Center aligned)
     textAlign: 'center',
     fontSize: 14,

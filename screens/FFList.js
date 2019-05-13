@@ -1,6 +1,6 @@
 import React from 'react';
 import { Location, Permissions } from 'expo';
-import { Image, ImageBackground, View, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { Image, ImageBackground, View, TextInput, TouchableOpacity, ScrollView } from 'react-native';
 import { Text, List, ListItem, Form, Item, Icon } from 'native-base';
 import { createStackNavigator } from 'react-navigation';
 
