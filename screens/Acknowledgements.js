@@ -11,7 +11,6 @@ export default class Acknowledgements extends React.Component {
     return (
       <NavigationBar {...this.props}>
         <View style={styles.card}>
-          <Text style={styles.title}>Acknowledgements</Text>
           <Text style={styles.subtext}>“If I have seen further, it is by standing on the shoulders of giants.” - Sir Isaac Newton</Text>
           <Text>{"\n"}</Text>
           <Text style={styles.description}>This project would certainly not have been possible without the generous assistance of many of our Hwa Chong teachers, alumni and students.</Text>
@@ -58,9 +57,10 @@ export default class Acknowledgements extends React.Component {
           <Text style={styles.leftTitle2}>Website Design</Text>
           <Text style={styles.description}>Faith Teo Kai En</Text>
           <Text style={styles.description}>Winnie Lim Wen Ying</Text>
+          <Text style={styles.description}>Amanda Koh Kai Yen</Text>
           <Text>{"\n"}</Text>
 
-          <Text style={styles.leftTitle2}>App Design</Text>
+          <Text style={styles.leftTitle2}>App Development</Text>
           <Text style={styles.description}>Lye Wen Jun</Text>
           <Text style={styles.description}>Leonard Ong Rui Fu</Text>
 
