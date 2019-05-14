@@ -112,7 +112,7 @@ export default class FFEntry extends Component {
     */
 
     //First, capitalise
-    sciname =  sciname.charAt(0).toUpperCase() + sciname.slice(1);
+    sciname =  sciname.charAt(0).toUpperCase() + sciname.toLowerCase().slice(1);
 
     //Remove heading and trailing whitespaces
     sciname = sciname.trim();

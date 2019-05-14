@@ -1,9 +1,10 @@
 import React from 'react';
-import { Text, View, ScrollView } from 'react-native';
+import { Text, View, ScrollView, Dimensions } from 'react-native';
 import FullWidthImage from '../constants/FullWidthImage'
 import styles from '../constants/Style';
 import NavigationBar from '../constants/NavigationBar';
 
+var fullWidth = Dimensions.get('window').width; //full width
 
 class History extends React.Component {
   constructor(props){
@@ -19,6 +20,9 @@ class History extends React.Component {
       history = historyData[key];
       let imageURL = history["imageRef"];
       let desc = history["description"];
+      let imgWidth = history["width"];
+      let imgHeight = history["height"];
+      imgHeight = fullWidth/imgWidth * imgHeight;
       let descView = (<View style={styles.card}>
         <Text style={[styles.description, {textAlign: 'justify'}]}>{desc}</Text>
       </View>);
@@ -27,7 +31,13 @@ class History extends React.Component {
       }
       display.push(
         <View key={key}> 
-          <FullWidthImage source={{uri: imageURL}} />
+          <View style={{
+            minWidth: fullWidth,
+            minHeight: imgHeight,
+            backgroundColor: "#DBDBDB"}}>
+            <FullWidthImage source={{uri: imageURL}} />
+          </View>
+          
           {descView}
         </View>
       );

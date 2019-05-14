@@ -1,8 +1,9 @@
 import React from 'react';
 import { Location, Permissions } from 'expo';
-import { Image, ImageBackground, View, TextInput, TouchableOpacity, ScrollView } from 'react-native';
+import { Alert, Image, ImageBackground, View, TextInput, TouchableOpacity, ScrollView } from 'react-native';
 import { Text, List, ListItem, Form, Item, Icon } from 'native-base';
 import { createStackNavigator } from 'react-navigation';
+
 
 import NavigationBar from '../constants/NavigationBar';
 import FFEntry from './FFEntry';
@@ -240,12 +241,18 @@ class FFList extends React.Component {
    * Callback function for NavigationBar's filtering features
    */
   updateSettings(newSettings, key = null) {
+    let {uLat, uLon} = this.state.userCoordinates
+    if(newSettings["sortBy"] == "distance" && (!uLat||!uLon)){
+      Alert.alert("Please try again","We're still trying to find your location");
+      return;
+    }
     if (key) {
       let oldSettings = this.state[key]
       this.setState({[key]: {...oldSettings, ...newSettings}})
     } else {
       this.setState(newSettings)
     }
+    
   }
 
   render() {
@@ -257,23 +264,23 @@ class FFList extends React.Component {
     // TODO: figure out how often this is running
     // Tidy up the data for each flora / fauna element in Firebase and calculate the distance
     let {uLat, uLon} = this.state.userCoordinates
-    if (uLat && uLon) {
-      for (let entry in ffData){
-        let details = ffData[entry];
-        if (details.locations != "") {
-          // Calculate how far away this flora / fauna can be found
-          let distances = details.locations.split(',').map(id => {
-            let [trailId, routeId] = id.split('/')
-            let {latitude, longitude} = mapData[trailId]['route'][routeId]
-            return distanceBetween(latitude, longitude, uLat, uLon) * 1000
-          })
-          let distance = Math.min(...distances)
-    
-          details = {id: entry, ...details, distance}
-          if (entry.startsWith("flora-")) flora.push(details)
-          else if (entry.startsWith("fauna-")) fauna.push(details)
-        }
+    for (let entry in ffData){
+      let details = ffData[entry];
+
+      // Calculate how far away this flora / fauna can be found
+      let distance = 1; //Placeholder Distance
+      if(uLat && uLon){
+        let distances = details.locations.split(',').map(id => {
+          let [trailId, routeId] = id.split('/')
+          let {latitude, longitude} = mapData[trailId]['route'][routeId]
+          return distanceBetween(latitude, longitude, uLat, uLon) * 1000
+        })
+
+        distance = Math.min(...distances)
       }
+      details = {id: entry, ...details, distance}
+      if (entry.startsWith("flora-")) flora.push(details)
+      else if (entry.startsWith("fauna-")) fauna.push(details)
     }
 
     let faunaDisplay = this.generateDisplay(fauna)
