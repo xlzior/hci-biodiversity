@@ -125,11 +125,11 @@ class FFList extends React.Component {
             
             <View style={styles.listItemTextHolder}>
   
-              <View style={{flex:3}}>
+              <View style={[styles.center,{flex:0.35}]}>
                 <Text ellipsizeMode='tail' numberOfLines={1} style={styles.miniTitle}>{name}</Text>
               </View>
   
-              <View style={{flex:7}}>
+              <View style={{flex:0.65}}>
                 <Text ellipsizeMode='tail' numberOfLines={3} style={styles.miniDesc}>
                   {description}
                 </Text>
@@ -216,7 +216,7 @@ class FFList extends React.Component {
                 cache="force-cache"
                 resizeMode='cover'
               >
-                <Text style={styles.ffListCircleText}>Flora</Text>
+                <Text numberOfLines={1} ellipsizeMode='clip' style={styles.ffListCircleText}>Flora</Text>
               </ImageBackground>
             </TouchableOpacity>
           
@@ -229,7 +229,7 @@ class FFList extends React.Component {
                 source={require('../assets/fauna.jpg')}
                 resizeMode='cover'
               >
-                <Text style={styles.ffListCircleText}>Fauna</Text>
+                <Text numberOfLines={1} ellipsizeMode='clip' style={styles.ffListCircleText}>Fauna</Text>
               </ImageBackground>
             </TouchableOpacity>
         </View>

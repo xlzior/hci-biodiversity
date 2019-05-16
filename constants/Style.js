@@ -121,20 +121,22 @@ const styles = StyleSheet.create({
   },
   miniTitle: { //For the F&F List
     textAlign: 'left',
-    fontSize: normalize(17),
+    fontSize: normalize(17), //Normally 17
     fontWeight: '500',
     alignSelf: 'stretch',
-    marginTop: 10,
+    marginRight: 10,
+    marginTop: 5,
     fontFamily: 'Lato'
   },
   miniDesc: { //For the F&F List
     textAlign: 'left',
     fontSize: normalize(13),
+    marginRight: 10,
     color: '#636C76',
     fontWeight: '400',
     alignSelf: 'stretch',
-    marginTop: 10,
-    fontFamily: 'Lato'
+    marginTop: 5,
+    fontFamily: 'Lato',
   },
   listItems: { //Meant for each list-item in F&F List
     width: '100%', 
@@ -179,9 +181,10 @@ const styles = StyleSheet.create({
     borderRadius: 100
   },
   ffListCircleText: { //For the text in the main circle images in FFList
-    fontSize: normalize(45),
+    fontSize: normalize(45), //Normally 45
     color: '#F6F8FA',
     fontWeight: '400',
+    flexWrap: 'nowrap',
     textShadowColor: 'rgba(0, 0, 0, 0.9)',
     textShadowOffset: {width: -1, height: 1},
     textShadowRadius: 20,

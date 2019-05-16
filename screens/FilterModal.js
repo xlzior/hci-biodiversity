@@ -30,9 +30,9 @@ export default class FilterModal extends Component {
 
     /* TRAIL SETTINGS */
     let trailOptions = [
-      {id: 'trail-01', name: 'College Section'},
-      {id: 'trail-02', name: 'Clock Tower'},
-      {id: 'trail-03', name: 'High School'},
+      {id: 'trail-01', name: 'Jing Xian trail (College)'},
+      {id: 'trail-02', name: 'Kong Chian trail (High school)'},
+      {id: 'trail-03', name: 'Kah Kee trail (High School)'},
       {id: 'all', name: 'All'}
     ]
     let trailSettings = (
