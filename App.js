@@ -95,7 +95,7 @@ const RootDrawer = createAppContainer(createDrawerNavigator({
   Map: MapView,
   'Flora and Fauna': FFList,
   'Historical Photos': History,
-  About: CommitteeMessage,
+  'Message from Committee': CommitteeMessage,
   Acknowledgements: Acknowledgements
 },
 {

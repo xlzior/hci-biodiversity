@@ -1,8 +1,20 @@
 
-import { StyleSheet, Dimensions } from 'react-native';
+import { StyleSheet, Dimensions, Platform, PixelRatio } from 'react-native';
 
 var fullWidth = Dimensions.get('window').width; //full width
 var fullHeight = Dimensions.get('window').height; //full height
+
+// based on iphone 8s's scale
+const scale = fullWidth / 375;
+
+function normalize(size) {
+  const newSize = size * scale 
+  if (Platform.OS === 'ios') {
+    return Math.round(PixelRatio.roundToNearestPixel(newSize))
+  } else {
+    return Math.round(PixelRatio.roundToNearestPixel(newSize)) - 2
+  }
+}
 
 const styles = StyleSheet.create({
   image: { //For main page
@@ -27,7 +39,7 @@ const styles = StyleSheet.create({
   },
   title: { //Used generally.
     textAlign: 'center',
-    fontSize: 33,
+    fontSize: normalize(33),
     color: '#646D77',
     fontWeight: '200',
     marginTop: 15,
@@ -35,7 +47,7 @@ const styles = StyleSheet.create({
   },
   littleTitle: { //Used generally.
     textAlign: 'center',
-    fontSize: 23,
+    fontSize: normalize(23),
     color: '#646D77',
     fontWeight: '200',
     marginTop: 15,
@@ -43,7 +55,7 @@ const styles = StyleSheet.create({
   },
   subtext: { //For main page (Center aligned)
     textAlign: 'center',
-    fontSize: 14,
+    fontSize: normalize(14),
     color: '#798493',
     fontWeight: '200',
     fontStyle: 'italic',
@@ -51,7 +63,7 @@ const styles = StyleSheet.create({
   },
   paragraph: { //For main page (Center aligned)
     textAlign: 'center',
-    fontSize: 17,
+    fontSize: normalize(17),
     color: '#636C76',
     fontWeight: '300',
     marginTop: 10,
@@ -59,7 +71,7 @@ const styles = StyleSheet.create({
   },
   leftTitle: { //For General Use (left Aligned)
     textAlign: 'left',
-    fontSize: 27,
+    fontSize: normalize(27),
     color: '#646D77',
     fontWeight: '500',
     marginTop: 10,
@@ -67,13 +79,13 @@ const styles = StyleSheet.create({
   },
   leftTitle2: { //For General Use (left Aligned), smaller
     textAlign: 'left',
-    fontSize: 19,
+    fontSize: normalize(19),
     marginTop: 10,
     fontFamily: 'Lato'
   },
   subtitle: { //For General Use (left Aligned)
     textAlign: 'left',
-    fontSize: 17,
+    fontSize: normalize(17),
     color: '#616B75',
     fontWeight: '400',
     marginTop: 5,
@@ -81,7 +93,7 @@ const styles = StyleSheet.create({
   },
   italicSubtitle: { //For General Use (left Aligned)
     textAlign: 'left',
-    fontSize: 17,
+    fontSize: normalize(17),
     color: '#616B75',
     fontWeight: '400',
     marginTop: 5,
@@ -89,7 +101,7 @@ const styles = StyleSheet.create({
   },
   description: { //For General Use (Left Aligned)
     textAlign: 'left',
-    fontSize: 18,
+    fontSize: normalize(18),
     color: '#636C76',
     fontWeight: '300',
     marginTop: 10,
@@ -109,7 +121,7 @@ const styles = StyleSheet.create({
   },
   miniTitle: { //For the F&F List
     textAlign: 'left',
-    fontSize: 17,
+    fontSize: normalize(17),
     fontWeight: '500',
     alignSelf: 'stretch',
     marginTop: 10,
@@ -117,7 +129,7 @@ const styles = StyleSheet.create({
   },
   miniDesc: { //For the F&F List
     textAlign: 'left',
-    fontSize: 13,
+    fontSize: normalize(13),
     color: '#636C76',
     fontWeight: '400',
     alignSelf: 'stretch',
@@ -144,7 +156,7 @@ const styles = StyleSheet.create({
   },
   searchBar:{
     height: 50,
-    fontSize: 17,
+    fontSize: normalize(17),
     flex: 1
   },
   textForm: {
@@ -167,7 +179,7 @@ const styles = StyleSheet.create({
     borderRadius: 100
   },
   ffListCircleText: { //For the text in the main circle images in FFList
-    fontSize: 45,
+    fontSize: normalize(45),
     color: '#F6F8FA',
     fontWeight: '400',
     textShadowColor: 'rgba(0, 0, 0, 0.9)',
