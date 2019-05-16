@@ -40,13 +40,7 @@ export default class FFEntry extends Component {
           }}
         >
           <Text style={{flex:1}}>{title}</Text>
-          <Right>
-            <Icon 
-              type='MaterialIcons' 
-              name='arrow-forward'
-            />
-          </Right>
-          
+          <Right><Icon type='MaterialIcons' name='arrow-forward'/></Right>
         </ListItem>
         
       )
@@ -56,7 +50,7 @@ export default class FFEntry extends Component {
       <Content>
         <View>
           {
-            imageRef ?
+            imageRef &&
             <View>
               <TouchableOpacity onPress={()=>this.setState({isImageViewVisible: true})}>
                 <FullWidthImage source={images[0].source} />
@@ -67,8 +61,15 @@ export default class FFEntry extends Component {
                 isVisible={this.state.isImageViewVisible}
                 onClose={()=>this.setState({isImageOpen: false})}
               />
-            </View> :
-            null
+              {
+                images.length > 1 &&
+                <ListItem onPress={()=>this.setState({isImageViewVisible: true})}>
+                  <Icon type='Entypo' name='images' style={{fontSize: 20, color: 'grey', marginRight: 5}}/>
+                  <Text style={{flex:1}}>Image gallery</Text>
+                  <Right><Icon type='MaterialIcons' name='arrow-forward'/></Right>
+                </ListItem>
+              }
+            </View>
           }
         </View>
         <View style={{padding:20}}>

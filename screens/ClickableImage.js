@@ -123,16 +123,41 @@ class PulsingCircle extends React.Component {
   }
 
   render() {
-    let { animSize, animTop, animLeft } = this.state;
+    let { animSize, animTop, animLeft, scaledTop, scaledLeft } = this.state;
     let { params, data } = this.props;
     let details = getFFEntryDetails(params.name,data);
 
+    /* FAUNA */
+    if (params.name.includes('fauna')) {
+      return (
+        <TouchableOpacity
+          style={{
+            position: 'absolute',
+            top: scaledTop,
+            left: scaledLeft
+          }}
+          onPress={() => this.props.navigation.navigate({
+            routeName: 'FFEntry',
+            params: {details},
+            goBack: 'Overview',
+            key: 'Overview'
+          })}
+        >
+          <Image
+            source={{uri: details.smallImage}}
+            style={{height: 40, width: 40, borderRadius: 20, borderWidth: 2, borderColor: 'white'}}
+          />
+        </TouchableOpacity>
+      )
+    }
+
+    /* FLORA */
     return (
       <AnimatedTouchableOpacity
         style={{
           position: 'absolute',
           borderWidth: 3,
-          borderColor: (params.name.indexOf('flora') >= 0) ? 'gold' : 'skyblue',
+          borderColor: 'gold',
           borderRadius: animSize,
           height: animSize,
           width: animSize,

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Location, Permissions } from 'expo';
 import { Image } from 'react-native';
-import { Text } from 'native-base';
+import { View, Text } from 'native-base';
 import Dimensions from 'Dimensions';
 const { height } = Dimensions.get('window');
 import { createStackNavigator } from 'react-navigation';
@@ -66,10 +66,24 @@ class MapComponent extends React.Component {
     let {type, trail} = this.state;
 
     /* ROUTE */
-
+    let legend = []
     for (let trailId in map) { // for each trail
       map[trailId]["markers"] = []
       let {name, color, route, markers} = map[trailId]
+
+      // LEGEND(S NEVER DIE)
+      if (name && color) legend.push(
+        <View
+          key={trailId}
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+          }}
+        >
+          <View style={{backgroundColor: color, height: 20, width: 20, borderRadius: 10, margin: 2}}></View>
+          <Text style={{marginLeft: 5}}>{name}</Text>
+        </View>
+      )
       if (trail == "all" || trail == trailId || type.flora) {
         for (let routeId in route) { // for each point in the trail
           let {title, latitude, longitude, smallImage, imageRef, points} = route[routeId]
@@ -117,6 +131,7 @@ class MapComponent extends React.Component {
         if (!latitude) return null; // return null if this fauna does not have latitude and longitude data
         let birdId = birdIds[index]
         let details = getFFEntryDetails(birdId, this.props.screenProps.data["flora&fauna"])
+        /* POLYGONAL BIRD REGIONS */
         birdRegions[birdId] = (
           <Polygon
             key={birdId}
@@ -139,13 +154,20 @@ class MapComponent extends React.Component {
         let {imageRef, smallImage} = details;
         // Map only displays the first image of each bird
         if (Array.isArray(imageRef)) imageRef = imageRef[0]
-
+        
+        /* CIRCULAR BIRD ICONS */
         return (
           <Marker
             key={birdId}
             title={name}
             coordinate={{latitude, longitude}}
-            onPress={() => this.setState({showBird: birdId})}
+            onPress={() => {
+              if (this.state.showBird == birdId) {
+                this.setState({showBird: null})
+              } else {
+                this.setState({showBird: birdId})
+              }
+            }}
             onCalloutPress={() => {
               this.props.navigation.navigate({
                 routeName: "FFEntry",
@@ -156,7 +178,14 @@ class MapComponent extends React.Component {
           >
             <Image
               source={{uri: smallImage || imageRef}}
-              style={{height: 40, width: 40, borderRadius: 20}}
+              style={{
+                height: 44,
+                width: 44, 
+                borderRadius: 22, 
+                borderWidth: 2, 
+                borderColor: 'white',
+                backgroundColor: 'lightgrey'
+              }}
             />
           </Marker>
         )
@@ -181,7 +210,6 @@ class MapComponent extends React.Component {
     }
     // deciding whether to include fauna
     if (type.fauna) {
-      // TODO: account for the trails that the birds belong to
       display.push(birdMarkers, displayedBirdRegion)
     }
 
@@ -192,8 +220,9 @@ class MapComponent extends React.Component {
         settings={{type, trail}}
         {...this.props}
       >
+
         <MapView
-          style={{height: height-50}}
+          style={{height: height-160}}
           initialRegion={{
             "latitude": 1.3252783969319353,
             "latitudeDelta": 0.010407239607321594,
@@ -202,12 +231,21 @@ class MapComponent extends React.Component {
           }}
           showsUserLocation={true}
         >
-        <Overlay
-          image={require('../assets/maps/map_all.png')}
-          bounds={[[1.328214, 103.800920], [1.324215, 103.807922]]}
-        />
-        {display}
+          <Overlay
+            image={require('../assets/maps/map_all.png')}
+            bounds={[[1.328214, 103.800920], [1.324215, 103.807922]]}
+          />
+          {display}
         </MapView>
+        <View
+          style={{
+            padding: 5,
+            height: 100,
+            width: '100%'
+          }}
+        >
+          {legend}
+        </View>
       </NavigationBar>
     );
   }
