@@ -23,9 +23,11 @@ class History extends React.Component {
       let imgWidth = history["width"];
       let imgHeight = history["height"];
       imgHeight = fullWidth/imgWidth * imgHeight;
-      let descView = (<View style={styles.card}>
-        <Text style={[styles.description, {textAlign: 'justify'}]}>{desc}</Text>
-      </View>);
+      let descView = (
+        <View style={styles.card}>
+          <Text style={[styles.description, {textAlign: 'justify'}]}>{desc}</Text>
+        </View>
+      );
       if(desc == ""){
         descView = null;
       }
@@ -34,7 +36,8 @@ class History extends React.Component {
           <View style={{
             minWidth: fullWidth,
             minHeight: imgHeight,
-            backgroundColor: "#DBDBDB"}}>
+            backgroundColor: "#DBDBDB"
+          }}>
             <FullWidthImage source={{uri: imageURL}} />
           </View>
           
@@ -45,6 +48,9 @@ class History extends React.Component {
     return (
       <NavigationBar {...this.props}>
         <ScrollView>
+          <View style={styles.card}>
+            <Text style={[styles.description, {textAlign: 'justify'}]}>This page is dedicated for all alumni whom may be interested in the brief history of flora in Hwa Chong. Are you able to guess which years were these photos taken? </Text>
+          </View>
           {display}
         </ScrollView>
       </NavigationBar>

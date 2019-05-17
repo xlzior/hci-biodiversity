@@ -19,7 +19,7 @@ export default class HomeScreen extends React.Component {
             A Garden Campus
           </Text>
           <Text style={styles.subtext}>
-            In celebration of Hwa Chong's 100th Anniversary
+            In celebration of {"\n"}Hwa Chong's 100th Anniversary
           </Text>
           <Text style={styles.paragraph}>
             Welcome to Hwa Chong’s very own nature walking trail app!

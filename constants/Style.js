@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
   },
   subtext: { //For main page (Center aligned)
     textAlign: 'center',
-    fontSize: normalize(14),
+    fontSize: normalize(18),
     color: '#798493',
     fontWeight: '200',
     fontStyle: 'italic',
