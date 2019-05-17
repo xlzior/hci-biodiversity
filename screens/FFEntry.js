@@ -25,7 +25,8 @@ export default class FFEntry extends Component {
     let markers = this.props.navigation.getParam('markers', {})
     description = this.formatParagraph(description);
 
-    let locationButtons = locations.split(',').map(location => {
+    let locationButtons
+    if (locations) locationButtons = locations.split(',').map(location => {
       let [trailId, routeId] = location.split('/');
       let {title} = data[trailId]['route'][routeId]
       return (
@@ -33,45 +34,49 @@ export default class FFEntry extends Component {
           key={location} 
           style={styles.entryLocationListItem}
           onPress={() => {
+            if (location in markers) markers[location].showCallout()
             this.props.navigation.navigate({
               routeName: "Map"
             })
-            if (location in markers) markers[location].showCallout()
           }}
         >
           <Text style={{flex:1}}>{title}</Text>
-          <Right><Icon type='MaterialIcons' name='arrow-forward'/></Right>
+          <Right><Icon type='Ionicons' name='ios-arrow-forward'/></Right>
         </ListItem>
         
       )
     })
+
+    let imageDisplay = imageRef != "" ? (
+      <View>
+        {
+          ('source' in images[0]) ?
+          <TouchableOpacity onPress={()=>this.setState({isImageViewVisible: true})}>
+            <FullWidthImage source={images[0].source} />
+          </TouchableOpacity> :
+          null
+        }
+        <ImageView
+          images={images}
+          imageIndex={0}
+          isVisible={this.state.isImageViewVisible}
+          onClose={()=>this.setState({isImageOpen: false})}
+        />
+        {
+          images.length > 1 ?
+          <ListItem onPress={()=>this.setState({isImageViewVisible: true})}>
+            <Icon type='Entypo' name='images' style={{fontSize: 20, color: 'grey', marginRight: 5}}/>
+            <Text style={{flex:1}}>Image gallery</Text>
+            <Right><Icon type='Ionicons' name='ios-arrow-forward'/></Right>
+          </ListItem> :
+          null
+        }
+      </View>
+    ) : null
     
     return (
       <Content>
-        <View>
-          {
-            imageRef &&
-            <View>
-              <TouchableOpacity onPress={()=>this.setState({isImageViewVisible: true})}>
-                <FullWidthImage source={images[0].source} />
-              </TouchableOpacity>
-              <ImageView
-                images={images}
-                imageIndex={0}
-                isVisible={this.state.isImageViewVisible}
-                onClose={()=>this.setState({isImageOpen: false})}
-              />
-              {
-                images.length > 1 &&
-                <ListItem onPress={()=>this.setState({isImageViewVisible: true})}>
-                  <Icon type='Entypo' name='images' style={{fontSize: 20, color: 'grey', marginRight: 5}}/>
-                  <Text style={{flex:1}}>Image gallery</Text>
-                  <Right><Icon type='MaterialIcons' name='arrow-forward'/></Right>
-                </ListItem>
-              }
-            </View>
-          }
-        </View>
+        {imageDisplay}
         <View style={{padding:20}}>
           <View style={{marginBottom: 100}}>
             <Text style={styles.leftTitle}>{name}</Text>
@@ -79,8 +84,14 @@ export default class FFEntry extends Component {
 
             <Text style={[styles.description, {textAlign: 'justify'}]}>{description}</Text>
             <Text>{'\n'}</Text>
-            <Text style={styles.leftTitle2}>Locations: </Text>
-            {locationButtons}
+            {
+              locations ?
+              <View>
+                <Text style={styles.leftTitle2}>Locations: </Text>
+                {locationButtons}
+              </View> :
+              null
+            }
           </View>
         </View>
       </Content>

@@ -127,6 +127,7 @@ class PulsingCircle extends React.Component {
     let { params, data } = this.props;
     let details = getFFEntryDetails(params.name,data);
 
+    if (params.name == "MISSING INFO") return null
     /* FAUNA */
     if (params.name.includes('fauna')) {
       return (
@@ -138,7 +139,7 @@ class PulsingCircle extends React.Component {
           }}
           onPress={() => this.props.navigation.navigate({
             routeName: 'FFEntry',
-            params: {details},
+            params: {details, markers: this.props.markers},
             goBack: 'Overview',
             key: 'Overview'
           })}
@@ -166,7 +167,7 @@ class PulsingCircle extends React.Component {
         }}
         onPress={() => this.props.navigation.navigate({
           routeName: 'FFEntry',
-          params: {details},
+          params: {details, markers: this.props.markers},
           goBack: 'Overview',
           key: 'Overview'
         })}

@@ -34,6 +34,8 @@ class FFList extends React.Component {
   state = {
     searchTerm: "",
     userCoordinates: {},
+    flora: [],
+    fauna: [],
     geoNoPerm: false,
     type: {
       flora: true,
@@ -45,18 +47,43 @@ class FFList extends React.Component {
 
   componentDidMount() {
     // TODO: check location every 1min?
-    this._getLocationAsync()
+    this.startWatchingLocation()
   }
 
   /**
    * Gets the user's location and stores in state
    */
-  _getLocationAsync = async () => {
+  startWatchingLocation = async () => {
     let { status } = await Permissions.askAsync(Permissions.LOCATION);
     if (status == 'granted') {
-      let location = await Location.getCurrentPositionAsync({enableHighAccuracy: true});
-      let {latitude, longitude} = location.coords
-      this.setState({ userCoordinates: {uLat: latitude, uLon: longitude} });
+      Location.watchPositionAsync({enableHighAccuracy: true}, ({coords}) => {
+        let flora = [], fauna = []
+        let uLat = coords.latitude, uLon = coords.longitude
+
+        let {data} = this.props.screenProps
+        const ffData = data["flora&fauna"];
+        const mapData = data["map"]
+        // Tidy up the data for each flora / fauna element in Firebase and calculate the distance
+        for (let entry in ffData){
+          let details = ffData[entry];
+
+          // Calculate how far away this flora / fauna can be found
+          let distance = 9999; //Placeholder Distance
+          if(uLat && uLon && details.locations){
+            let distances = details.locations.split(',').map(id => {
+              let [trailId, routeId] = id.split('/')
+              let {latitude, longitude} = mapData[trailId]['route'][routeId]
+              return distanceBetween(latitude, longitude, uLat, uLon) * 1000
+            })
+
+            distance = Math.min(...distances)
+          }
+          details = {id: entry, ...details, distance}
+          if (entry.startsWith("flora-")) flora.push(details)
+          else if (entry.startsWith("fauna-")) fauna.push(details)
+        }
+        this.setState({flora, fauna, userCoordinates: {uLat, uLon}})
+      });
     }
   };
 
@@ -113,14 +140,19 @@ class FFList extends React.Component {
             key={name}
             button onPress={() => this.props.navigation.navigate({
               routeName: 'FFEntry',
-              params: {details}
+              params: { details, markers: this.props.screenProps.markers}
             })}
           >
             <View style={styles.listItemImageHolder}>
-              <Image
-                style={{height: 100}}
-                source={{uri: smallImage}}
-                resizeMode='cover'/>
+            {
+              smallImage ?
+                <Image
+                  style={{height: 100}}
+                  source={{uri: smallImage}}
+                  resizeMode='cover'
+                /> :
+                null
+            }
             </View>
             
             <View style={styles.listItemTextHolder}>
@@ -256,33 +288,7 @@ class FFList extends React.Component {
   }
 
   render() {
-    let flora = [], fauna = [];
-    let {data} = this.props.screenProps;
-    const ffData = data["flora&fauna"];
-    const mapData = data["map"]
-
-    // TODO: figure out how often this is running
-    // Tidy up the data for each flora / fauna element in Firebase and calculate the distance
-    let {uLat, uLon} = this.state.userCoordinates
-    for (let entry in ffData){
-      let details = ffData[entry];
-
-      // Calculate how far away this flora / fauna can be found
-      let distance = 1; //Placeholder Distance
-      if(uLat && uLon){
-        let distances = details.locations.split(',').map(id => {
-          let [trailId, routeId] = id.split('/')
-          let {latitude, longitude} = mapData[trailId]['route'][routeId]
-          return distanceBetween(latitude, longitude, uLat, uLon) * 1000
-        })
-
-        distance = Math.min(...distances)
-      }
-      details = {id: entry, ...details, distance}
-      if (entry.startsWith("flora-")) flora.push(details)
-      else if (entry.startsWith("fauna-")) fauna.push(details)
-    }
-
+    let {flora, fauna} = this.state
     let faunaDisplay = this.generateDisplay(fauna)
     let floraDisplay = this.generateDisplay(flora)
     let body = this.generateBody(faunaDisplay, floraDisplay);
@@ -298,9 +304,21 @@ class FFList extends React.Component {
     );
 
     //Hide the cancel button if there's no search term.
-    if((this.state.searchTerm == null||this.state.searchTerm == "")
-    && (this.state.type.flora == this.state.type.fauna)){
+    if((this.state.searchTerm == null||this.state.searchTerm == "")){
       cancelButton = null;
+    }
+
+    // Back button
+    let backButton = null;
+    if (this.state.type.flora != this.state.type.fauna) {
+      backButton = (
+        <Icon type='Ionicons' name='ios-arrow-back' style={styles.grayIcon} //Cancel icon button
+          onPress={() => {
+            this.searchBarElement.current.clear();
+            this.setState({searchTerm:"",type:{flora:true,fauna:true}});
+          }}
+        />
+      )
     }
 
     let {type, trail, sortBy} = this.state
@@ -313,6 +331,7 @@ class FFList extends React.Component {
       >
         <Form style={styles.textForm}>
           <Item>
+            {backButton}
             <Icon type='MaterialIcons' name='search' style={styles.grayIcon} />
             <TextInput //Search bar
               onChangeText={searchTerm => {

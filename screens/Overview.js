@@ -13,15 +13,17 @@ export default class Overview extends Component {
   render() {
     // Note: ONLY flora and fauna data is passed onto ClickableImage.
     let uri = this.props.navigation.getParam('url')
-    let points = this.props.navigation.getParam('points')
     let image = uri ? {uri} : null;
+    let points = this.props.navigation.getParam('points')
+    let markers = this.props.navigation.getParam('markers')
     return (
       <Content contentContainerStyle={{height: '120%'}}>
         <ClickableImage
           {...this.props}
-          points={points}
-          data={this.props.screenProps.data["flora&fauna"]}
           image={image}
+          points={points}
+          markers={markers}
+          data={this.props.screenProps.data["flora&fauna"]}
         />
       </Content>
     )

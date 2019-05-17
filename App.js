@@ -37,8 +37,13 @@ export default class App extends React.Component {
     this.state = {
       dataLoaded: false,
       data: {},
+      markers: {}
     }
     this.datastoreRef = firebaseApp.database().ref();
+  }
+
+  saveMarkers(markers) {
+    if (Object.keys(markers).length > Object.keys(this.state.markers).length) this.setState({markers})
   }
 
   fetchFromFirebase(datastoreRef) {
@@ -85,7 +90,11 @@ export default class App extends React.Component {
       );
     }
 
-    return <RootDrawer screenProps={{data: this.state.data}} />;
+    return <RootDrawer screenProps={{
+      data: this.state.data,
+      markers: this.state.markers,
+      saveMarkers: m => this.saveMarkers(m),
+    }} />;
   }
 }
 

@@ -14,12 +14,7 @@ import FFEntry from './FFEntry';
 
 class MapComponent extends React.Component {
   async componentDidMount() {
-    const { status } = await Permissions.askAsync(Permissions.LOCATION);
-    if (status === 'granted') {
-      return Location.getCurrentPositionAsync({enableHighAccuracy: true});
-    } else {
-      throw new Error('Location permission not granted');
-    }
+    Permissions.askAsync(Permissions.LOCATION);
   }
 
   markers = {}
@@ -49,14 +44,12 @@ class MapComponent extends React.Component {
 
   componentDidMount() {
     let {data} = this.props.screenProps;
-
     let birds = {}
     if ('flora&fauna' in data) {
       for (let ff in data['flora&fauna']) {
         if (ff.indexOf('fauna') >= 0) birds[ff] = data['flora&fauna'][ff]
       }
     }
-
     this.setState({birds}) // save in state for future reference without reevaluating
   }
 
@@ -93,12 +86,15 @@ class MapComponent extends React.Component {
               key={title}
               coordinate={{latitude, longitude}}
               pinColor={color}
-              ref={component => this.markers[`${trailId}/${routeId}`] = component}
+              ref={component => {
+                this.markers[`${trailId}/${routeId}`] = component;
+                this.props.screenProps.saveMarkers(this.markers)
+              }}
             >
               <Callout
                 onPress={() => this.props.navigation.navigate({
                   routeName: 'Overview',
-                  params: { title, points, url: imageRef },
+                  params: { title, points, url: imageRef, markers: this.markers },
                   goBack: "Map"
                 })}
               >
@@ -145,7 +141,7 @@ class MapComponent extends React.Component {
             onPress={() => {
               this.props.navigation.navigate({
                 routeName: "FFEntry",
-                params: {details, markers: this.markers},
+                params: { details, markers: this.markers },
                 goBack: "Map"
               })
             }}
@@ -171,7 +167,7 @@ class MapComponent extends React.Component {
             onCalloutPress={() => {
               this.props.navigation.navigate({
                 routeName: "FFEntry",
-                params: {details, markers: this.markers},
+                params: { details, markers: this.markers },
                 goBack: "Map"
               })
             }}
@@ -224,10 +220,10 @@ class MapComponent extends React.Component {
         <MapView
           style={{height: height-160}}
           initialRegion={{
-            "latitude": 1.3252783969319353,
-            "latitudeDelta": 0.010407239607321594,
-            "longitude": 103.80472172,
-            "longitudeDelta": 0.006327,
+            "latitude": 1.3260613490467819,
+            "latitudeDelta": 0.01040723631632523,
+            "longitude": 103.80502293607216,
+            "longitudeDelta": 0.0074822049486442666,
           }}
           showsUserLocation={true}
         >
