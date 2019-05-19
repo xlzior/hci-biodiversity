@@ -1,9 +1,7 @@
 import React from 'react';
-import { Location, Permissions } from 'expo';
+import { Permissions } from 'expo';
 import { Image } from 'react-native';
-import { View, Text } from 'native-base';
-import Dimensions from 'Dimensions';
-const { height } = Dimensions.get('window');
+import { View, Text, ListItem, Right, Icon } from 'native-base';
 import { createStackNavigator } from 'react-navigation';
 import MapView, { Marker, Overlay, Callout, Polygon } from 'react-native-maps';
 import getFFEntryDetails from '../constants/FFEntryFetcher';
@@ -61,29 +59,19 @@ class MapComponent extends React.Component {
     /* ROUTE */
     let legend = []
     for (let trailId in map) { // for each trail
+      let trailMarkerIds = []
       map[trailId]["markers"] = []
       let {name, color, route, markers} = map[trailId]
 
-      // LEGEND(S NEVER DIE)
-      if (name && color) legend.push(
-        <View
-          key={trailId}
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-          }}
-        >
-          <View style={{backgroundColor: color, height: 20, width: 20, borderRadius: 10, margin: 2}}></View>
-          <Text style={{marginLeft: 5}}>{name}</Text>
-        </View>
-      )
       if (trail == "all" || trail == trailId || type.flora) {
         for (let routeId in route) { // for each point in the trail
           let {title, latitude, longitude, smallImage, imageRef, points} = route[routeId]
+          trailMarkerIds.push(title)
           // TRAIL ROUTE MARKERS
           markers.push(
             <Marker
               key={title}
+              identifier={title}
               coordinate={{latitude, longitude}}
               pinColor={color}
               ref={component => {
@@ -116,6 +104,18 @@ class MapComponent extends React.Component {
           )
         }
       }
+
+      // LEGEND(S NEVER DIE)
+      if (name && color) legend.push(
+        <ListItem
+          key={trailId}
+          onPress={() => this.mapView.fitToSuppliedMarkers(trailMarkerIds, {edgePadding: {top: 50, bottom: 50, left: 50, right: 50}})}
+        >
+          <View style={{backgroundColor: color, height: 20, width: 20, borderRadius: 10, margin: 2}}></View>
+          <Text style={{flex: 1, marginLeft: 5}}>{name}</Text>
+          <Right><Icon type='Ionicons' name='ios-arrow-forward'/></Right>
+        </ListItem>
+      )
     }
 
     /* BIRDS */
@@ -214,18 +214,20 @@ class MapComponent extends React.Component {
         enableFilter={['type', 'trail']}
         updateSettings={(s, k) => this.updateSettings(s, k)}
         settings={{type, trail}}
+        style={{display: 'flex', flex: 1}}
         {...this.props}
       >
 
         <MapView
-          style={{height: height-160}}
+          style={{flex: 1}}
           initialRegion={{
-            "latitude": 1.3260613490467819,
-            "latitudeDelta": 0.01040723631632523,
-            "longitude": 103.80502293607216,
-            "longitudeDelta": 0.0074822049486442666,
+            "latitude": 1.3262123389431508,
+            "latitudeDelta": 0.007104620633147096,
+            "longitude": 103.80525180497608,
+            "longitudeDelta": 0.0072654564431218205,
           }}
           showsUserLocation={true}
+          ref={(component) => this.mapView = component}
         >
           <Overlay
             image={require('../assets/maps/map_all.png')}
@@ -236,7 +238,6 @@ class MapComponent extends React.Component {
         <View
           style={{
             padding: 5,
-            height: 100,
             width: '100%'
           }}
         >
