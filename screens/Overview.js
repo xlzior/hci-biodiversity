@@ -17,7 +17,7 @@ export default class Overview extends Component {
     let points = this.props.navigation.getParam('points')
     let markers = this.props.navigation.getParam('markers')
     return (
-      <Content contentContainerStyle={{height: '120%'}}>
+      <Content>
         <ClickableImage
           {...this.props}
           image={image}

@@ -1,13 +1,13 @@
 import React from 'react';
-import { ImageBackground, Image, TouchableOpacity, Animated, Dimensions } from 'react-native';
+import { ImageBackground, Image, TouchableOpacity, Animated, Dimensions, View } from 'react-native';
 import getFFEntryDetails from '../constants/FFEntryFetcher';
 
 export default class ClickableImage extends React.Component {
   constructor() {
     super()
     this.state = {
-      height: 0,
-      width: 0,
+      layoutHeight: 0,
+      layoutWidth: 0,
       imageHeight: -1,
       imageWidth: -1
     }
@@ -22,14 +22,13 @@ export default class ClickableImage extends React.Component {
   }
 
   setState(state){
-    if(this.mounted)
-      super.setState(state);
+    if(this.mounted) super.setState(state);
   }
 
   componentDidMount() {
     if (this.props.image && 'uri' in this.props.image) {
-      Image.getSize(this.props.image.uri, (imageHeight, imageWidth) => {
-        this.setState({imageHeight, imageWidth})
+      Image.getSize(this.props.image.uri, (imageWidth, imageHeight) => {
+        this.setState({imageWidth, imageHeight})
       })
     }
   }
@@ -37,51 +36,61 @@ export default class ClickableImage extends React.Component {
   render() {
     let phoneHeight = Dimensions.get('window').height;
     let phoneWidth = Dimensions.get('window').width;
-    let {imageHeight, imageWidth} = this.state;
+    let {imageHeight, imageWidth, layoutHeight, layoutWidth} = this.state;
 
     if (imageHeight < 0) return null
-    let landscape = imageHeight > imageWidth;
-    // rotate the image if it's in landscape orientation
-    let style = landscape ?
-    {
-      position: 'absolute',
-      top: phoneWidth/2.568493151,
-      left: -phoneWidth/2.568493151,
-      right: 0,
-      bottom: 0,
-      height: phoneWidth,
-      width: phoneHeight,
-      transform: [{rotate: '90deg'}]
-    } :
-    {
-      height: '100%',
-      width: '100%'
-    }
-    
+    if (!this.props.image) return null
+
+    // generate pulsing circles
     let pulsingCircles = this.props.points.map((point, index) => {
       return (
         <PulsingCircle
           {...this.props}
           {...point}
           key={index}
-          height={this.state.height}
-          width={this.state.width}
+          layoutHeight={layoutHeight}
+          layoutWidth={layoutWidth}
         />
       )
     })
-    if (!this.props.image) return null
+    
+    // rotate the image if it's in landscape orientation
+    let landscape = imageHeight < imageWidth;
+    let scaledImageHeight, scaledImageWidth, offset
+    if (landscape) {
+      scaledImageWidth = imageWidth/imageHeight*phoneWidth
+      scaledImageHeight = phoneWidth
+      offset = scaledImageWidth / 2 - scaledImageHeight / 2
+    } else {
+      scaledImageWidth = phoneWidth
+      scaledImageHeight = imageHeight/imageWidth*phoneHeight
+    }
     return (
-      <ImageBackground
-        source={this.props.image}
-        style={style}
-        onLayout={(e) => {
-          let {height, width} = e.nativeEvent.layout;
-          this.setState({height, width})
+      <View
+        style={{
+          height: Math.max(scaledImageHeight, scaledImageWidth),
+          width: Math.min(scaledImageHeight, scaledImageWidth)
         }}
-        ref={view => this.imageBackground = view}
       >
-      {this.state.height > 0 ? pulsingCircles : null}
-      </ImageBackground>
+        <ImageBackground
+          source={this.props.image}
+          style={[
+            {
+              height: scaledImageHeight,
+              width: scaledImageWidth,
+            },
+            landscape ? {
+              transform: [{rotate: '90deg'}, {translateX: offset}, {translateY: offset}]
+            } : null
+          ]}
+          onLayout={(e) => {
+            let {height, width} = e.nativeEvent.layout;
+            this.setState({layoutHeight: height, layoutWidth: width})
+          }}
+        >
+        {layoutHeight > 0 ? pulsingCircles : null}
+        </ImageBackground>
+      </View>
     )
   }
 }
@@ -91,9 +100,9 @@ const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpaci
 class PulsingCircle extends React.Component {
   constructor(props) {
     super(props)
-    let { size, top, left, height, width } = this.props;
-    let scaledTop = top*height-size/2
-    let scaledLeft = left*width-size/2
+    let { size, top, left, layoutHeight, layoutWidth } = this.props;
+    let scaledTop = top*layoutHeight-size/2
+    let scaledLeft = left*layoutWidth-size/2
     this.state = {
       scaledTop,
       scaledLeft,
@@ -129,31 +138,29 @@ class PulsingCircle extends React.Component {
 
     if (params.name == "MISSING INFO") return null
     /* FAUNA */
-    if (params.name.includes('fauna')) {
-      return (
-        <TouchableOpacity
-          style={{
-            position: 'absolute',
-            top: scaledTop,
-            left: scaledLeft
-          }}
-          onPress={() => this.props.navigation.navigate({
-            routeName: 'FFEntry',
-            params: {details, markers: this.props.markers},
-            goBack: 'Overview',
-            key: 'Overview'
-          })}
-        >
-          <Image
-            source={{uri: details.smallImage}}
-            style={{height: 40, width: 40, borderRadius: 20, borderWidth: 2, borderColor: 'white'}}
-          />
-        </TouchableOpacity>
-      )
-    }
+    if (params.name.includes('fauna')) return (
+      <TouchableOpacity
+        style={{
+          position: 'absolute',
+          top: scaledTop,
+          left: scaledLeft
+        }}
+        onPress={() => this.props.navigation.navigate({
+          routeName: 'FFEntry',
+          params: {details, markers: this.props.markers},
+          goBack: 'Overview',
+          key: 'Overview'
+        })}
+      >
+        <Image
+          source={{uri: details.smallImage}}
+          style={{height: 40, width: 40, borderRadius: 20, borderWidth: 2, borderColor: 'white'}}
+        />
+      </TouchableOpacity>
+    )
 
     /* FLORA */
-    return (
+    else return (
       <AnimatedTouchableOpacity
         style={{
           position: 'absolute',

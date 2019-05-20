@@ -220,6 +220,13 @@ class MapComponent extends React.Component {
 
         <MapView
           style={{flex: 1}}
+          minZoomLevel={this.state.minZoomLevel}
+          onMapReady={()=>{
+            this.setState({
+              minZoomLevel: 10
+            })
+          }}
+          maxZoomLevel={20}
           initialRegion={{
             "latitude": 1.3262123389431508,
             "latitudeDelta": 0.007104620633147096,
