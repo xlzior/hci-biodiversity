@@ -7,6 +7,8 @@ import ImageView from 'react-native-image-view';
 
 import styles from '../constants/Style';
 
+let convertImgurURL = (url, size) => url.slice(0,url.length-4) + size + url.slice(url.length-4, url.length)
+
 export default class FFEntry extends Component {
   state = {
     isImageViewVisible: false
@@ -49,13 +51,9 @@ export default class FFEntry extends Component {
 
     let imageDisplay = imageRef != "" ? (
       <View>
-        {
-          ('source' in images[0]) ?
-          <TouchableOpacity onPress={()=>this.setState({isImageViewVisible: true})}>
-            <FullWidthImage source={images[0].source} />
-          </TouchableOpacity> :
-          null
-        }
+        <TouchableOpacity onPress={()=>this.setState({isImageViewVisible: true})}>
+          <FullWidthImage source={{uri: convertImgurURL(imageRef[0], 'h')}} />
+        </TouchableOpacity>
         <ImageView
           images={images}
           imageIndex={0}

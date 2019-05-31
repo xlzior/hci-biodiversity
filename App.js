@@ -8,6 +8,7 @@ import HomeScreen from './screens/HomeScreen';
 import MapView from './screens/Map';
 import FFList from './screens/FFList';
 import Acknowledgements from './screens/Acknowledgements';
+import References from './screens/References';
 import CommitteeMessage from './screens/CommitteeMessage';
 import Introduction from './screens/Introduction';
 import History from './screens/History';
@@ -105,7 +106,8 @@ const RootDrawer = createAppContainer(createDrawerNavigator({
   'Flora and Fauna': FFList,
   'Historical Photos': History,
   'Message from Committee': CommitteeMessage,
-  Acknowledgements: Acknowledgements
+  Acknowledgements: Acknowledgements,
+  References: References
 },
 {
   initialRouteName: 'Home',

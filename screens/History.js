@@ -5,6 +5,7 @@ import styles from '../constants/Style';
 import NavigationBar from '../constants/NavigationBar';
 
 var fullWidth = Dimensions.get('window').width; //full width
+let convertImgurURL = (url, size) => url.slice(0,url.length-4) + size + url.slice(url.length-4, url.length)
 
 class History extends React.Component {
   constructor(props){
@@ -38,7 +39,7 @@ class History extends React.Component {
             minHeight: imgHeight,
             backgroundColor: "#DBDBDB"
           }}>
-            <FullWidthImage source={{uri: imageURL}} />
+            <FullWidthImage source={{uri: convertImgurURL(imageURL, 'h')}} />
           </View>
           
           {descView}

@@ -4,16 +4,11 @@ import { Alert, Image, ImageBackground, View, TextInput, TouchableOpacity, Scrol
 import { Text, List, ListItem, Form, Item, Icon } from 'native-base';
 import { createStackNavigator } from 'react-navigation';
 
-
 import NavigationBar from '../constants/NavigationBar';
 import FFEntry from './FFEntry';
 import styles from '../constants/Style';
 
-const options = {
-  enableHighAccuracy: true,
-  timeout: 5000,
-  maximumAge: 0
-};
+let convertImgurURL = (url, size) => url.slice(0,url.length-4) + size + url.slice(url.length-4, url.length)
 
 const distanceBetween = (lat1, lon1, lat2, lon2) => {
   var p = 0.017453292519943295;    // Math.PI / 180
@@ -131,8 +126,10 @@ class FFList extends React.Component {
     else data.sort((a, b) => a.name < b.name ? -1 : 1)
 
     return data.map((details) => {
-      let {id, name, description, smallImage} = details;
-      // FFList only displays the first image
+      let {id, name, description, imageRef} = details;
+      if (Array.isArray(imageRef)) imageRef = imageRef[0]
+      let smallImage = convertImgurURL(imageRef, 'm')
+
       if (this.isSearched(details) && !this.isFiltered(details)) {
         return (
           <ListItem

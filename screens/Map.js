@@ -10,6 +10,7 @@ import NavigationBar from '../constants/NavigationBar';
 import Overview from './Overview'
 import FFEntry from './FFEntry';
 
+let convertImgurURL = (url, size) => url.slice(0,url.length-4) + size + url.slice(url.length-4, url.length)
 class MapComponent extends React.Component {
   async componentDidMount() {
     Permissions.askAsync(Permissions.LOCATION);
@@ -65,7 +66,8 @@ class MapComponent extends React.Component {
 
       if (trail == "all" || trail == trailId || type.flora) {
         for (let routeId in route) { // for each point in the trail
-          let {title, latitude, longitude, smallImage, imageRef, points} = route[routeId]
+          let {title, latitude, longitude, imageRef, points} = route[routeId]
+          let smallImage = convertImgurURL(imageRef, 'm')
           trailMarkerIds.push(title)
           // TRAIL ROUTE MARKERS
           markers.push(
@@ -147,11 +149,11 @@ class MapComponent extends React.Component {
             }}
           />
         )
-        let {imageRef, smallImage} = details;
-        // Map only displays the first image of each bird
-        if (Array.isArray(imageRef)) imageRef = imageRef[0]
-        
+
         /* CIRCULAR BIRD ICONS */
+        let {imageRef} = details;
+        if (Array.isArray(imageRef)) imageRef = imageRef[0]
+        let smallImage = convertImgurURL(imageRef, 'b')
         return (
           <Marker
             key={birdId}
@@ -173,7 +175,7 @@ class MapComponent extends React.Component {
             }}
           >
             <Image
-              source={{uri: smallImage || imageRef}}
+              source={{uri: smallImage}}
               style={{
                 height: 44,
                 width: 44, 
